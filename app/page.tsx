@@ -38,7 +38,7 @@ export default async function Home() {
   const completedTodos = Object.entries(data).filter(([key, value]) => value.status);
   const incompleteTodos = Object.entries(data).filter(([key, value]) => !value.status);
   return (
-    <main className='flex flex-col items-center min-h-screen p-12 md:p-24 md:justify-center border'>
+    <>
       <div className='flex flex-col items-center justify-between w-full md:flex-row'>
         <Heading
           title='Todo x Auth0 Application'
@@ -62,6 +62,6 @@ export default async function Home() {
           ))}
         </Card>
       </div>
-    </main>
+    </>
   );
 }

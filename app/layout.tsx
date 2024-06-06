@@ -2,8 +2,9 @@ import { Inter } from 'next/font/google';
 import type { Metadata } from 'next';
 import { Toaster } from '@/components/ui/toaster';
 import { Providers } from '@/components/providers';
-import { Header } from '@/components/ui/header';
+import { Header } from '@/components/header';
 import './globals.css';
+import Footer from '@/components/footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,7 +19,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={inter.className}>
         <Providers>
           <Header />
-          <main className='md:mx-[10vw]'>{children}</main>
+          <main className='md:mx-[10vw] min-h-[calc(100vh-154px)] sm:min-h-[calc(100vh-146px)] py-6'>{children}</main>
+          <Footer />
           <Toaster />
         </Providers>
       </body>
