@@ -11,9 +11,10 @@ import {
 } from '@/components/ui/navigation-menu';
 import { forwardRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Github, HomeIcon, Linkedin, Menu } from 'lucide-react';
+import { GithubIcon, HomeIcon, LinkedinIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ModeToggle } from '@/components/theme-toggle';
+import { HamburgerMenu } from './hamburger-menu';
 
 type HeaderProps = {
   user?: { username: string; name: string } | null | undefined;
@@ -38,7 +39,7 @@ export const Header: React.FC<HeaderProps> = ({ user }) => {
         <div className='mr-4 hidden md:flex'>
           <div className='mr-6 flex items-center space-x-2'>
             <Link href='/' className='mr-6 flex items-center space-x-2' passHref>
-              <HomeIcon />
+              <HomeIcon className='h-5 w-5' />
               <span>ToDoz</span>
             </Link>
           </div>
@@ -74,21 +75,23 @@ export const Header: React.FC<HeaderProps> = ({ user }) => {
           </NavigationMenu>
         </div>
 
+        {/* MOBILE */}
         <div className='inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:text-accent-foreground h-9 py-2 mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden'>
-          <Menu />
+          <HamburgerMenu components={components} />
           <span className='sr-only'>Toggle Menu</span>
         </div>
+
         <div className='flex flex-1 items-center justify-between space-x-2 md:justify-end'>
           <div className='w-full flex-1 md:w-auto md:flex-none'>Search Bar</div>
           <nav className='flex items-center space-x-2'>
             <Link href='https://github.com/aviv-maman/todo-auth0' target='_blank' referrerPolicy='no-referrer'>
               <Button aria-label='GitHub' variant='outline' size='icon' className='h-9 w-9'>
-                <Github className='w-5 h-5' />
+                <GithubIcon className='w-5 h-5' />
               </Button>
             </Link>
             <Link href='https://www.linkedin.com/in/aviv-maman-914a95223' target='_blank' referrerPolicy='no-referrer'>
               <Button aria-label='LinkedIn' variant='outline' size='icon' className='h-9 w-9'>
-                <Linkedin className='w-5 h-5' />
+                <LinkedinIcon className='w-5 h-5' />
               </Button>
             </Link>
             <ModeToggle />
