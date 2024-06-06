@@ -13,13 +13,13 @@ export const Feed: React.FC<FeedProps> = ({ data = [] }) => {
   return data ? (
     <div className='flex flex-col w-full mt-10 overflow-hidden lg:flex-row md:justify-evenly'>
       <Card className='md:min-w-[350px] w-1/2'>
-        <CardHeader className='text-center'>Todo</CardHeader>
+        <CardHeader className='text-center'>Incomplete</CardHeader>
         {incompleteTodos.map(([id, value]) => (
           <TodoCard key={id} id={id} value={value} />
         ))}
       </Card>
       <Card className='md:min-w-[350px] mt-5 lg:mt-0 w-1/2'>
-        <CardHeader className='text-center'>Done</CardHeader>
+        <CardHeader className='text-center'>Complete</CardHeader>
         {completedTodos.map(([id, value]) => (
           <TodoCard key={id} id={id} value={value} />
         ))}

@@ -8,11 +8,12 @@ import { type SubmitHandler, useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Form, FormControl, FormField, FormItem, FormMessage } from './ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
 import { useToast } from './ui/use-toast';
 
 const formSchema = z.object({
-  todo: z.string().min(2).max(500),
+  title: z.string().min(2).max(500),
+  content: z.string().min(2).max(500),
 });
 
 export const AddTodo: React.FC = () => {
@@ -22,7 +23,8 @@ export const AddTodo: React.FC = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      todo: '',
+      title: '',
+      content: '',
     },
   });
 
@@ -58,12 +60,29 @@ export const AddTodo: React.FC = () => {
         className='flex flex-col w-full grid-cols-12 gap-2 px-2 py-4 mt-5 border rounded-lg md:px-4 focus-within:shadow-sm'>
         <FormField
           control={form.control}
-          name='todo'
+          name='title'
           render={({ field }) => (
             <FormItem>
+              <FormLabel>Title</FormLabel>
               <FormControl>
-                <Input placeholder='What needs to be done?' {...field} />
+                <Input placeholder='Enter a title' {...field} />
               </FormControl>
+              <FormDescription>This the title of the todo item.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name='content'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Content</FormLabel>
+              <FormControl>
+                <Input placeholder='Enter a content' {...field} />
+              </FormControl>
+              <FormDescription>This the content of the todo item.</FormDescription>
               <FormMessage />
             </FormItem>
           )}

@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { Toaster } from '@/components/ui/toaster';
 import { Providers } from '@/components/providers';
 import { Header } from '@/components/header';
-import './globals.css';
+import '@/styles/globals.css';
 import Footer from '@/components/footer';
 
 const inter = Inter({ subsets: ['latin'] });
