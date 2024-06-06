@@ -19,9 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={inter.className}>
         <Providers>
           <Header />
-          <main className='container md:mx-[10vw] min-h-[calc(100vh-154px)] sm:min-h-[calc(100vh-146px)] py-6'>
-            {children}
-          </main>
+          <main className='container min-h-[calc(100vh-154px)] sm:min-h-[calc(100vh-146px)] py-6'>{children}</main>
           <Footer />
           <Toaster />
         </Providers>
