@@ -16,12 +16,20 @@ export default function Footer() {
         </div>
         <div className='flex items-center gap-1'>
           <Link href='https://github.com/aviv-maman/todo-auth0' target='_blank' referrerPolicy='no-referrer'>
-            <Button aria-label='GitHub' variant='ghost' size='icon'>
+            <Button
+              aria-label='GitHub'
+              variant='ghost'
+              size='icon'
+              className='hover:bg-neutral-300 dark:hover:bg-neutral-800 h-9 w-9'>
               <Github className='w-5 h-5' />
             </Button>
           </Link>
           <Link href='https://www.linkedin.com/in/aviv-maman-914a95223' target='_blank' referrerPolicy='no-referrer'>
-            <Button aria-label='LinkedIn' variant='ghost' size='icon'>
+            <Button
+              aria-label='LinkedIn'
+              variant='ghost'
+              size='icon'
+              className='hover:bg-neutral-300 dark:hover:bg-neutral-800 h-9 w-9'>
               <Linkedin className='w-5 h-5 text-blue-600' />
             </Button>
           </Link>
