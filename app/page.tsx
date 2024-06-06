@@ -38,10 +38,10 @@ export default async function Home() {
   const completedTodos = Object.entries(data).filter(([key, value]) => value.status);
   const incompleteTodos = Object.entries(data).filter(([key, value]) => !value.status);
   return (
-    <main className='flex flex-col items-center min-h-screen p-12 md:p-24 md:justify-center'>
+    <main className='flex flex-col items-center min-h-screen p-12 md:p-24 md:justify-center border'>
       <div className='flex flex-col items-center justify-between w-full md:flex-row'>
         <Heading
-          title='Todo Application'
+          title='Todo x Auth0 Application'
           description='Simple Todo application with CRUD functionality made with Upstash Redis and Next.js'
           source='https://github.com'
         />
