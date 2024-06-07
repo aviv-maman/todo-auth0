@@ -1,24 +1,22 @@
 'use client';
-import { useState } from 'react';
+import { useEffect } from 'react';
+import { useFormState, useFormStatus } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import axios from 'axios';
-import { type SubmitHandler, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { Plus } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
 import { useToast } from './ui/use-toast';
+import { addTodoItem } from '@/app/actions/todo';
 
 const formSchema = z.object({
-  title: z.string().min(2).max(500),
-  content: z.string().min(2).max(500),
+  title: z.string().min(2).max(50),
+  content: z.string().min(2).max(250),
 });
 
-export const AddTodo: React.FC = () => {
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
+export const AddTodoForm: React.FC = () => {
   const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -28,35 +26,18 @@ export const AddTodo: React.FC = () => {
     },
   });
 
-  type FormData = z.infer<typeof formSchema>;
+  const initialState = { result: null, error: null };
+  const [formState, formAction] = useFormState(addTodoItem, initialState);
 
-  const onSubmit: SubmitHandler<FormData> = async (values) => {
-    try {
-      setLoading(true);
-      await axios.post(`/api/todo`, values);
-      form.reset();
-      toast({
-        title: 'Todo Added',
-        description: 'Todo Successfully Added',
-        variant: 'default',
-      });
-      router.refresh();
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: 'Failed to submit data',
-        description: 'Something went wrong.',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const isLoading = form.formState.isSubmitting;
+  useEffect(() => {
+    if (formState.error) toast({ title: 'Something Went Wrong', description: formState.error, variant: 'destructive' });
+    if (formState.result) toast({ title: 'Success', description: 'Item Was Successfully Added', variant: 'default' });
+  }, [formState, toast]);
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        action={formAction}
         className='flex flex-col w-full grid-cols-12 gap-2 px-2 py-4 mt-5 border rounded-lg md:px-4 focus-within:shadow-sm'>
         <FormField
           control={form.control}
@@ -72,7 +53,6 @@ export const AddTodo: React.FC = () => {
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name='content'
@@ -87,10 +67,17 @@ export const AddTodo: React.FC = () => {
             </FormItem>
           )}
         />
-        <Button type='submit' className='mt-5 w-fit' disabled={isLoading}>
-          Add <Plus className='w-5 h-5 ml-5' />
-        </Button>
+        <AddButton />
       </form>
     </Form>
+  );
+};
+
+const AddButton: React.FC = () => {
+  const status = useFormStatus();
+  return (
+    <Button type='submit' className='mt-5 w-fit' disabled={status.pending}>
+      Add <Plus className='w-5 h-5 ml-5' />
+    </Button>
   );
 };

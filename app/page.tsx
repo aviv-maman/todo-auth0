@@ -1,7 +1,7 @@
 import { Feed } from '@/components/feed';
 import { Heading } from '@/components/heading';
 import { ModeToggle } from '@/components/theme-toggle';
-import { AddTodo } from '@/components/todo-form';
+import { AddTodoForm } from '@/components/todo-form';
 import redis, { databaseName } from '@/lib/redis';
 import type { TodoData } from '@/lib/database.types';
 
@@ -18,7 +18,7 @@ export default async function Home() {
         />
         <ModeToggle />
       </div>
-      <AddTodo />
+      <AddTodoForm />
       <Feed data={data} />
     </>
   );

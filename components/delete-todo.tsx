@@ -1,6 +1,5 @@
 'use client';
 import { useState } from 'react';
-import axios from 'axios';
 import { Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
@@ -19,7 +18,7 @@ export const DeleteTodo: React.FC<DeleteTodoProps> = ({ id }) => {
   const handleDeleteProject = async () => {
     setIsDeleting(true);
     try {
-      await axios.delete(`/api/todo/${id}`);
+      await fetch(`/api/todo/${id}`, { method: 'DELETE' });
       router.push('/');
     } catch (error) {
       console.error(error);

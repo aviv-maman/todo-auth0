@@ -1,90 +1,88 @@
 'use client';
+import { useEffect, useState } from 'react';
+import { useFormState, useFormStatus } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import axios from 'axios';
-import { useState } from 'react';
-import { type SubmitHandler, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { PencilIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
 import { Label } from './ui/label';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Switch } from './ui/switch';
 import { useToast } from './ui/use-toast';
+import { editTodoItem } from '@/app/actions/todo';
 
 const formSchema = z.object({
-  todo: z.string().min(2).max(500),
+  title: z.string().min(2).max(50),
+  content: z.string().min(2).max(250),
   status: z.boolean(),
 });
 
 interface EditTodoFormProps {
   id: string;
   value: {
-    todo: string;
+    created_at: number;
+    updated_at: number;
+    title: string;
+    content: string;
     status: boolean;
   };
 }
 
-export const EditTodo: React.FC<EditTodoFormProps> = ({ id, value }) => {
-  const [loading, setLoading] = useState(false);
-
-  const router = useRouter();
+export const EditTodoForm: React.FC<EditTodoFormProps> = ({ id, value }) => {
   const { toast } = useToast();
+  const [closeEditDialog, setCloseEditDialog] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      todo: value.todo,
+      title: value.title,
+      content: value.content,
       status: value.status,
     },
   });
 
-  type FormData = z.infer<typeof formSchema>;
+  const initialState = { result: null, error: null, id };
+  const [formState, formAction] = useFormState(editTodoItem, initialState);
 
-  const onSubmit: SubmitHandler<FormData> = async (values) => {
-    try {
-      setLoading(true);
-      await axios.patch(`/api/todo/${id}`, values);
-      toast({
-        title: 'Todo Updated',
-        description: 'Todo Successfully Updated',
-        variant: 'default',
-      });
-      router.refresh();
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: 'Failed to submit data',
-        description: 'Something went wrong.',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const handleIsStatusChange = (checked: boolean) => {
-    form.setValue('status', checked);
-  };
-
-  const isLoading = form.formState.isSubmitting;
+  useEffect(() => {
+    setCloseEditDialog(() => false);
+    if (formState.error) toast({ title: 'Something Went Wrong', description: formState.error, variant: 'destructive' });
+    if (formState.result || formState.result === 0)
+      toast({ title: 'Success', description: 'Item Was Successfully Updated', variant: 'default' });
+  }, [formState, toast]);
 
   return (
     <>
-      <Sheet>
+      <Sheet open={closeEditDialog} onOpenChange={setCloseEditDialog}>
         <SheetTrigger asChild>
           <PencilIcon className='w-5 h-5 hover:cursor-pointer hover:text-indigo-300' />
         </SheetTrigger>
         <SheetContent>
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(onSubmit)}
+              action={formAction}
+              encType='multipart/form-data'
               className='flex flex-col w-full grid-cols-12 gap-2 px-2 py-4 mt-5 border rounded-lg md:px-4 focus-within:shadow-sm'>
               <Label htmlFor='todo' className='mt-3 text-left w-fit'>
                 Task
               </Label>
               <FormField
                 control={form.control}
-                name='todo'
+                name='title'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input placeholder='What needs to be done?' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='content'
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
@@ -103,7 +101,11 @@ export const EditTodo: React.FC<EditTodoFormProps> = ({ id, value }) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Switch checked={field.value} onCheckedChange={handleIsStatusChange} />
+                      <Switch
+                        name='status'
+                        checked={field.value}
+                        onCheckedChange={(checked) => form.setValue('status', checked)}
+                      />
                     </FormControl>
                     <div className='space-y-1 leading-none'>
                       <FormLabel>{field.value ? 'Done' : 'Not Done'}</FormLabel>
@@ -113,14 +115,20 @@ export const EditTodo: React.FC<EditTodoFormProps> = ({ id, value }) => {
                   </FormItem>
                 )}
               />
-
-              <Button type='submit' className='mt-5 w-fit' disabled={isLoading}>
-                Update
-              </Button>
+              <EditButton />
             </form>
           </Form>
         </SheetContent>
       </Sheet>
     </>
+  );
+};
+
+const EditButton: React.FC = () => {
+  const status = useFormStatus();
+  return (
+    <Button type='submit' className='mt-5 w-fit' disabled={status.pending}>
+      Update
+    </Button>
   );
 };

@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import redis, { databaseName } from '@/lib/redis';
+import { customAlphabet, urlAlphabet } from 'nanoid';
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,14 +10,27 @@ export async function POST(request: NextRequest) {
       content: formData.get('content'),
     };
     if (!todoData.title || !todoData.content) {
-      return NextResponse.json({ result: null, error: 'Not all the required fields were provided.' }, { status: 400 });
+      throw NextResponse.json(
+        { result: null, error: 'Not all the required fields were provided.' },
+        { status: 400, statusText: 'Bad Request', url: request.url }
+      );
     }
-    const newId = Date.now().toString();
-    const newItem = JSON.stringify({ title: todoData.title, content: todoData.content, status: false });
-    const result = await redis.hset(databaseName, { [newId]: newItem });
+    const newId = customAlphabet(urlAlphabet, 25)();
+    const newItem = {
+      id: newId,
+      created_at: Date.now(),
+      updated_at: Date.now(),
+      title: todoData.title,
+      content: todoData.content,
+      status: false,
+    };
+    const result = await redis.hset(databaseName, { [newId]: JSON.stringify(newItem) });
     return NextResponse.json({ result, error: null });
   } catch (error) {
     if (error instanceof Error) console.error(`${error.name}: ${error.message}`);
-    return NextResponse.json({ result: null, error: 'Internal Server Error' }, { status: 500 });
+    throw NextResponse.json(
+      { result: null, error: 'Internal Server Error' },
+      { status: 500, statusText: 'Internal Server Error', url: request.url }
+    );
   }
 }
