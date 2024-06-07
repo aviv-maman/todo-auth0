@@ -1,9 +1,9 @@
 import { Feed } from '@/components/feed';
 import { Heading } from '@/components/heading';
-import { ModeToggle } from '@/components/theme-toggle';
 import { AddTodoForm } from '@/components/todo-form';
 import redis, { databaseName } from '@/lib/redis';
 import type { TodoData } from '@/lib/database.types';
+import { InfoIcon } from 'lucide-react';
 
 export default async function Home() {
   const data = (await redis.hgetall(databaseName)) as TodoData;
@@ -16,7 +16,7 @@ export default async function Home() {
           description='Simple Todo application with CRUD functionality made with Upstash Redis and Next.js'
           source='https://github.com'
         />
-        <ModeToggle />
+        <InfoIcon className='w-5 h-5' />
       </div>
       <AddTodoForm />
       <Feed data={data} />
