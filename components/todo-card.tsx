@@ -1,10 +1,14 @@
 'use client';
-import DeleteTodo from './delete-todo';
-import { EditTodoForm } from './edit-todo-form';
-import { CardContent } from './ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { CheckIcon, UserIcon } from 'lucide-react';
 import type { TodoData } from '@/lib/database.types';
+import { cn } from '@/lib/utils';
+import { EditTodoForm } from './edit-todo-form';
+import DeleteTodo from './delete-todo';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
-interface TodoCardProps {
+type TodoCardProps = React.ComponentProps<typeof Card> & {
   id: string;
   value: {
     created_at: number;
@@ -13,24 +17,30 @@ interface TodoCardProps {
     content: string;
     status: boolean;
   };
-}
+};
 
-const TodoCard: React.FC<TodoCardProps> = ({ id, value }) => {
+const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) => {
   return (
-    <>
-      <CardContent key={id} className='flex items-center justify-start max-w-xl text-center'>
-        <div className='flex items-center justify-between w-full p-3 border rounded-lg'>
-          <div className='w-2/3'>
-            <h1>{value.title}</h1>
-          </div>
-
-          <div className='flex w-fill w-[80px] justify-between items-center'>
-            <EditTodoForm id={id} value={value} />
-            <DeleteTodo id={id} />
-          </div>
-        </div>
-      </CardContent>
-    </>
+    <Card className={cn('w-full', className)} {...props}>
+      <CardHeader className='flex-row justify-between p-2 pl-4'>
+        <CardTitle className='content-center text-xl'>{value.title}</CardTitle>
+        <Avatar style={{ marginBlockStart: 'auto' }}>
+          <AvatarImage src='https://github.com/shadcn.pngx' />
+          <AvatarFallback>
+            <UserIcon className='h-5 w-5' />
+          </AvatarFallback>
+        </Avatar>
+      </CardHeader>
+      <CardContent className='border-y space-x-4 p-4 text-sm text-muted-foreground'>{value.content}</CardContent>
+      <CardFooter className='block md:flex p-4'>
+        <Button className='p-2'>
+          <CheckIcon className='mr-2 h-4 w-4' /> Mark as complete
+        </Button>
+        <CardDescription className='text-xs pt-2'>
+          Updated at {new Date(value.updated_at).toLocaleString()}
+        </CardDescription>
+      </CardFooter>
+    </Card>
   );
 };
 

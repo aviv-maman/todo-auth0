@@ -6,7 +6,34 @@ import type { TodoData } from '@/lib/database.types';
 import { HoverInfo } from '@/components/hover-info';
 
 export default async function Home() {
-  const data = (await redis.hgetall(databaseName)) as TodoData;
+  // const data = (await redis.hgetall(databaseName)) as TodoData;
+  const data = [
+    {
+      id: '3imzSTaLpwmJH8V4c5TIfL4bZ',
+      created_at: 1717712389603,
+      updated_at: 1717713330721,
+      title: 'Take the trash out 🗑️',
+      content:
+        'The trash is piling up, take it out! The trash is piling up, take it out! The trash is piling up, take it out! The trash is piling up, take it out!',
+      status: false,
+    },
+    {
+      id: '9okfsKuYReRrNCG0PFarE',
+      created_at: 1717699872618,
+      updated_at: 1717699872618,
+      title: 'Fix the sink 🚰',
+      content: 'The sink is leaking, fix it asap!',
+      status: false,
+    },
+    {
+      id: 'B08A6z4Ueu1oTjh3vVpxi',
+      created_at: 1717699691946,
+      updated_at: 1717699691946,
+      title: 'Buy groceries 🛒',
+      content: 'Buy some milk and eggs',
+      status: false,
+    },
+  ] as unknown as TodoData;
 
   return (
     <>

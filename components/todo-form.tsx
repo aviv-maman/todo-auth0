@@ -38,7 +38,7 @@ export const AddTodoForm: React.FC = () => {
     <Form {...form}>
       <form
         action={formAction}
-        className='flex flex-col w-full grid-cols-12 gap-2 px-2 py-4 mt-5 border rounded-lg md:px-4 focus-within:shadow-sm'>
+        className='flex flex-col grid-cols-12 gap-2 p-4 mt-5 border rounded-lg md:px-4 focus-within:shadow-sm md:mx-64'>
         <FormField
           control={form.control}
           name='title'
