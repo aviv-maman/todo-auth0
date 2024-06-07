@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
+import { AlertTriangleIcon, Loader2Icon } from 'lucide-react';
 
 interface WarningModalProps {
   isOpen: boolean;
@@ -31,8 +32,18 @@ export const WarningModal: React.FC<WarningModalProps> = ({ isOpen, onClose, onC
         <Button disabled={loading} variant='outline' onClick={onClose}>
           Cancel
         </Button>
-        <Button disabled={loading} variant='destructive' onClick={onConfirm}>
-          Continue
+        <Button disabled={loading} variant='destructive' onClick={onConfirm} className='flex justify-start w-[121px]'>
+          {loading ? (
+            <>
+              <Loader2Icon className='h-4 animate-spin' />
+              <span>Loading...</span>
+            </>
+          ) : (
+            <>
+              <AlertTriangleIcon className='h-4' />
+              <span>Continue</span>
+            </>
+          )}
         </Button>
       </div>
     </Modal>
