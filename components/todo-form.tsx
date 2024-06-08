@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { Plus } from 'lucide-react';
+import { Loader2Icon, PlusIcon } from 'lucide-react';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
 import { useToast } from './ui/use-toast';
 import { addTodoItem } from '@/app/actions/todo';
@@ -77,7 +77,8 @@ const AddButton: React.FC = () => {
   const status = useFormStatus();
   return (
     <Button type='submit' className='mt-5 p-2 w-fit' disabled={status.pending}>
-      <Plus className='w-4 h-4 mr-2' /> Add
+      {status.pending ? <Loader2Icon className='w-4 h-4 mr-2 animate-spin' /> : <PlusIcon className='w-4 h-4 mr-2' />}
+      Add
     </Button>
   );
 };
