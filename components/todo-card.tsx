@@ -34,7 +34,7 @@ const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) =
       <CardContent className='border-y space-x-4 p-4 text-sm text-muted-foreground'>{value.content}</CardContent>
       <CardFooter className='block md:flex p-4 md:justify-between'>
         <Button className='p-2'>
-          <CheckIcon className='mr-2 h-4 w-4' /> Mark as complete
+          <CheckIcon className='w-4 h-4 mr-2' /> Mark as complete
         </Button>
         <CardDescription className='text-xs h-[40px] flex items-end'>
           Updated at {new Date(value.updated_at).toLocaleString()}

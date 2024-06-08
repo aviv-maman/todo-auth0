@@ -11,7 +11,7 @@ export const Feed: React.FC<FeedProps> = ({ data = [] }) => {
   const incompleteTodos = Object.entries(data).filter(([key, value]) => !value.status);
 
   return data ? (
-    <div className='flex flex-col w-full mt-10 overflow-hidden lg:flex-row md:justify-evenly'>
+    <div id='feed-incomplete' className='flex flex-col w-full mt-6 overflow-hidden lg:flex-row md:justify-evenly'>
       <div className='w-full md:min-w-[350px] flex flex-col items-center md:mx-64'>
         <h2 title='Incomplete' className='text-center border rounded text-2xl font-bold tracking-tight py-2 px-4'>
           Incomplete

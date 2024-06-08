@@ -48,7 +48,7 @@ export const AddTodoForm: React.FC = () => {
               <FormControl>
                 <Input placeholder='Enter a title' {...field} />
               </FormControl>
-              <FormDescription>This the title of the todo item.</FormDescription>
+              <FormDescription>The title of the todo item.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -62,7 +62,7 @@ export const AddTodoForm: React.FC = () => {
               <FormControl>
                 <Input placeholder='Enter a content' {...field} />
               </FormControl>
-              <FormDescription>This the content of the todo item.</FormDescription>
+              <FormDescription>The content of the todo item.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -76,8 +76,8 @@ export const AddTodoForm: React.FC = () => {
 const AddButton: React.FC = () => {
   const status = useFormStatus();
   return (
-    <Button type='submit' className='mt-5 w-fit' disabled={status.pending}>
-      Add <Plus className='w-5 h-5 ml-5' />
+    <Button type='submit' className='mt-5 p-2 w-fit' disabled={status.pending}>
+      <Plus className='w-4 h-4 mr-2' /> Add
     </Button>
   );
 };
