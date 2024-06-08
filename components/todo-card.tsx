@@ -36,7 +36,7 @@ const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) =
         <Button className='p-2'>
           <CheckIcon className='mr-2 h-4 w-4' /> Mark as complete
         </Button>
-        <CardDescription className='text-xs pt-2'>
+        <CardDescription className='text-xs h-[40px] flex items-end'>
           Updated at {new Date(value.updated_at).toLocaleString()}
         </CardDescription>
       </CardFooter>
