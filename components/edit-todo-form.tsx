@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { PencilIcon } from 'lucide-react';
+import { Loader2Icon, PencilIcon, PencilRulerIcon } from 'lucide-react';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
 import { Label } from './ui/label';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
@@ -130,8 +130,13 @@ export const EditTodoForm: React.FC<EditTodoFormProps> = ({ id, value }) => {
 const EditButton: React.FC = () => {
   const status = useFormStatus();
   return (
-    <Button type='submit' className='mt-5 w-fit' disabled={status.pending}>
-      Update
+    <Button type='submit' className='px-2.5 w-fit' disabled={status.pending}>
+      {status.pending ? (
+        <Loader2Icon className='w-4 h-4 mr-2 animate-spin' />
+      ) : (
+        <PencilRulerIcon className='w-4 h-4 mr-2' />
+      )}
+      <span>Update</span>
     </Button>
   );
 };

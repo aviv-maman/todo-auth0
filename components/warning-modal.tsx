@@ -32,18 +32,13 @@ export const WarningModal: React.FC<WarningModalProps> = ({ isOpen, onClose, onC
         <Button disabled={loading} variant='outline' onClick={onClose}>
           Cancel
         </Button>
-        <Button disabled={loading} variant='destructive' onClick={onConfirm} className='flex justify-start w-[121px]'>
+        <Button disabled={loading} variant='destructive' onClick={onConfirm} className='px-2.5 w-fit'>
           {loading ? (
-            <>
-              <Loader2Icon className='h-4 animate-spin' />
-              <span>Loading...</span>
-            </>
+            <Loader2Icon className='w-4 h-4 mr-2 animate-spin' />
           ) : (
-            <>
-              <AlertTriangleIcon className='h-4' />
-              <span>Continue</span>
-            </>
+            <AlertTriangleIcon className='w-4 h-4 mr-2' />
           )}
+          <span>Delete</span>
         </Button>
       </div>
     </Modal>
