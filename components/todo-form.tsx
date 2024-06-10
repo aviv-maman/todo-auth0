@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,11 +26,14 @@ export const AddTodoForm: React.FC = () => {
     },
   });
 
+  // const formRef = useRef<HTMLFormElement | null>(null);
+
   const initialState = { result: null, error: null };
   const [formState, formAction] = useFormState(addTodoItem, initialState);
 
   useEffect(() => {
-    if (formState.error) toast({ title: 'Something Went Wrong', description: formState.error, variant: 'destructive' });
+    if (formState.error)
+      toast({ title: 'Something Went Wrong', description: formState.error.message, variant: 'destructive' });
     if (formState.result) toast({ title: 'Success', description: 'Item Was Successfully Added', variant: 'default' });
   }, [formState, toast]);
 
@@ -38,6 +41,8 @@ export const AddTodoForm: React.FC = () => {
     <Form {...form}>
       <form
         action={formAction}
+        // ref={formRef}
+        // onSubmit={form.handleSubmit(() => formRef.current && formAction(new FormData(formRef.current)))}
         className='flex flex-col grid-cols-12 gap-2 p-4 mt-5 border rounded-lg md:px-4 focus-within:shadow-sm md:mx-64'>
         <FormField
           control={form.control}

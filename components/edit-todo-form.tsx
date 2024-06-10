@@ -48,7 +48,8 @@ export const EditTodoForm: React.FC<EditTodoFormProps> = ({ id, value }) => {
 
   useEffect(() => {
     setCloseEditDialog(() => false);
-    if (formState.error) toast({ title: 'Something Went Wrong', description: formState.error, variant: 'destructive' });
+    if (formState.error)
+      toast({ title: 'Something Went Wrong', description: formState.error.message, variant: 'destructive' });
     if (formState.result || formState.result === 0)
       toast({ title: 'Success', description: 'Item Was Successfully Updated', variant: 'default' });
   }, [formState, toast]);
@@ -57,7 +58,9 @@ export const EditTodoForm: React.FC<EditTodoFormProps> = ({ id, value }) => {
     <>
       <Sheet open={closeEditDialog} onOpenChange={setCloseEditDialog}>
         <SheetTrigger asChild>
-          <PencilIcon className='w-5 h-5 hover:cursor-pointer hover:text-indigo-300' />
+          <Button size='sm' className='px-2.5 bg-blue-800 hover:bg-blue-700 hover:dark:bg-blue-900 text-white'>
+            <PencilIcon className='w-4 h-4' />
+          </Button>
         </SheetTrigger>
         <SheetContent>
           <Form {...form}>

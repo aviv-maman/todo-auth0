@@ -12,15 +12,15 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       updated_at: Date.now(),
     };
     if (!updatedData.title || !updatedData.content) {
-      throw NextResponse.json(
-        { result: null, error: 'Not all the required fields were provided.' },
-        { status: 400, statusText: 'Bad Request', url: request.url }
+      return NextResponse.json(
+        { result: null, error: { name: 'ValidationError', message: 'Not all the required fields were provided.' } },
+        { status: 400 }
       );
     }
     if (!params.id) {
-      throw NextResponse.json(
-        { result: null, error: 'ID is required.' },
-        { status: 400, statusText: 'Bad Request', url: request.url }
+      return NextResponse.json(
+        { result: null, error: { name: 'ValidationError', message: 'ID is required.' } },
+        { status: 400 }
       );
     }
     const key = params.id;
@@ -28,11 +28,16 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     const newValue = JSON.stringify({ ...currentValue, ...updatedData });
     const result = await redis.hset(databaseName, { [key]: newValue });
     return NextResponse.json({ result, error: null });
-  } catch (error) {
-    if (error instanceof Error) console.error(`${error.name}: ${error.message}`);
+  } catch (error: any) {
     throw NextResponse.json(
-      { result: null, error: 'Internal Server Error' },
-      { status: 500, statusText: 'Internal Server Error', url: request.url }
+      {
+        result: null,
+        error: {
+          name: error.name || 'Internal Server Error',
+          message: `${error.message}. This is internal server error at route handler (PATCH)`,
+        },
+      },
+      { status: 500 }
     );
   }
 }
@@ -40,18 +45,24 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     if (!params.id) {
-      throw NextResponse.json(
-        { result: null, error: 'ID is required.' },
-        { status: 400, statusText: 'Bad Request', url: request.url }
+      return NextResponse.json(
+        { result: null, error: { name: 'ValidationError', message: 'ID is required.' } },
+        { status: 400 }
       );
     }
     const result = await redis.hdel(databaseName, params.id);
     return NextResponse.json({ result, error: null });
-  } catch (error) {
-    if (error instanceof Error) console.error(`${error.name}: ${error.message}`);
+  } catch (error: any) {
+    console.error(`${error.name}! ${error.message}`);
     throw NextResponse.json(
-      { result: null, error: 'Internal Server Error' },
-      { status: 500, statusText: 'Internal Server Error', url: request.url }
+      {
+        result: null,
+        error: {
+          name: error.name || 'Internal Server Error',
+          message: `${error.message}. This is internal server error at route handler (DELETE)`,
+        },
+      },
+      { status: 500 }
     );
   }
 }

@@ -1,18 +1,25 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import redis, { databaseName } from '@/lib/redis';
 import { customAlphabet, urlAlphabet } from 'nanoid';
+import { fakeDelay } from '@/app/actions/todo';
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const todoData = {
-      title: formData.get('title'),
-      content: formData.get('content'),
+      title: formData.get('title') as string | null,
+      content: formData.get('content') as string | null,
     };
     if (!todoData.title || !todoData.content) {
-      throw NextResponse.json(
-        { result: null, error: 'Not all the required fields were provided.' },
-        { status: 400, statusText: 'Bad Request', url: request.url }
+      return NextResponse.json(
+        { result: null, error: { name: 'ValidationError', message: 'Not all the required fields were provided.' } },
+        { status: 400 }
+      );
+    }
+    if (todoData.title.length < 2 || todoData.title.length > 50) {
+      return NextResponse.json(
+        { result: null, error: { name: 'ValidationError', message: 'Not all the required fields were provided.' } },
+        { status: 400 }
       );
     }
     const newId = customAlphabet(urlAlphabet, 25)();
@@ -24,13 +31,20 @@ export async function POST(request: NextRequest) {
       content: todoData.content,
       status: false,
     };
+    await fakeDelay(2000);
     const result = await redis.hset(databaseName, { [newId]: JSON.stringify(newItem) });
     return NextResponse.json({ result, error: null });
-  } catch (error) {
-    if (error instanceof Error) console.error(`${error.name}: ${error.message}`);
+  } catch (error: any) {
+    console.error(`${error.name}! ${error.message}`);
     throw NextResponse.json(
-      { result: null, error: 'Internal Server Error' },
-      { status: 500, statusText: 'Internal Server Error', url: request.url }
+      {
+        result: null,
+        error: {
+          name: error.name || 'Internal Server Error',
+          message: `${error.message}. This is internal server error at route handler (POST)`,
+        },
+      },
+      { status: 500 }
     );
   }
 }

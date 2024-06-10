@@ -51,7 +51,7 @@ export const DeleteTodo: React.FC<DeleteTodoProps> = ({ id }) => {
         }}
         loading={pending}
       />
-      <Button disabled={pending} variant='destructive' size='sm' onClick={() => setOpen(true)}>
+      <Button disabled={pending} variant='destructive' size='sm' className='px-2.5' onClick={() => setOpen(true)}>
         <Trash className='w-4 h-4' />
       </Button>
     </>

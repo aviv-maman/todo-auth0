@@ -33,9 +33,14 @@ const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) =
       </CardHeader>
       <CardContent className='border-y space-x-4 p-4 text-sm text-muted-foreground'>{value.content}</CardContent>
       <CardFooter className='block md:flex p-4 md:justify-between'>
-        <Button className='p-2'>
-          <CheckIcon className='w-4 h-4 mr-2' /> Mark as complete
-        </Button>
+        <div className='space-x-2'>
+          <Button size='sm' className='px-2.5 bg-green-700 hover:bg-green-600 hover:dark:bg-green-800 text-white'>
+            <CheckIcon className='w-4 h-4 mr-2' />
+            <span>Mark as complete</span>
+          </Button>
+          <EditTodoForm id={id} value={value} />
+          <DeleteTodo id={id} />
+        </div>
         <CardDescription className='text-xs h-[40px] flex items-end'>
           Updated at {new Date(value.updated_at).toLocaleString()}
         </CardDescription>
