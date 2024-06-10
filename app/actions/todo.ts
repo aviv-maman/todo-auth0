@@ -18,7 +18,13 @@ export const addTodoItem = async (prevState: typeof INITIAL_STATE, formData: For
   try {
     const res = await fetch(`${DOMAIN_URL}/api/todo`, { method: 'POST', body: formData });
     if (!res.ok) {
-      return { result: null, error: { name: res.status, message: res.statusText } };
+      const error: (typeof INITIAL_STATE)['error'] = { name: res.status, message: res.statusText };
+      if (res.headers.get('content-type')?.includes('application/json')) {
+        const data = await res.json();
+        error.name = data.error.name;
+        error.message = data.error.message;
+      }
+      return { result: null, error };
     }
     const data = await res.json();
     prevState = { result: data?.result, error: null };
@@ -34,7 +40,13 @@ export const editTodoItem = async (prevState: typeof INITIAL_STATE & { id: strin
   try {
     const res = await fetch(`${DOMAIN_URL}/api/todo/${prevState.id}`, { method: 'PATCH', body: formData });
     if (!res.ok) {
-      return { ...prevState, result: null, error: { name: res.status, message: res.statusText } };
+      const error: (typeof INITIAL_STATE)['error'] = { name: res.status, message: res.statusText };
+      if (res.headers.get('content-type')?.includes('application/json')) {
+        const data = await res.json();
+        error.name = data.error.name;
+        error.message = data.error.message;
+      }
+      return { ...prevState, result: null, error };
     }
     const data = await res.json();
     prevState = { ...prevState, result: data?.result, error: null };
@@ -51,7 +63,13 @@ export const deleteTodoItem = async (prevState: typeof INITIAL_STATE & { id: str
   try {
     const res = await fetch(`${DOMAIN_URL}/api/todo/${prevState.id}`, { method: 'DELETE' });
     if (!res.ok) {
-      return { ...prevState, result: null, error: { name: res.status, message: res.statusText } };
+      const error: (typeof INITIAL_STATE)['error'] = { name: res.status, message: res.statusText };
+      if (res.headers.get('content-type')?.includes('application/json')) {
+        const data = await res.json();
+        error.name = data.error.name;
+        error.message = data.error.message;
+      }
+      return { ...prevState, result: null, error };
     }
     const data = await res.json();
     prevState = { ...prevState, result: data?.result, error: null };
