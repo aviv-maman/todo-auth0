@@ -82,7 +82,6 @@ export const Header: React.FC<HeaderProps> = ({ user }) => {
         </div>
 
         <div className='flex flex-1 items-center justify-between space-x-2 md:justify-end'>
-          <div className='w-full flex-1 md:w-auto md:flex-none'>Search Bar</div>
           <nav className='flex items-center space-x-2'>
             <Link href='https://github.com/aviv-maman/todo-auth0' target='_blank' referrerPolicy='no-referrer'>
               <Button aria-label='GitHub' variant='outline' size='icon' className='h-9 w-9'>

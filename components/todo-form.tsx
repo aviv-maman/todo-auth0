@@ -81,7 +81,7 @@ export const AddTodoForm: React.FC = () => {
 const AddButton: React.FC = () => {
   const status = useFormStatus();
   return (
-    <Button type='submit' className='px-2.5 w-fit' disabled={status.pending}>
+    <Button type='submit' size='sm' className='px-2.5 w-fit' disabled={status.pending}>
       {status.pending ? <Loader2Icon className='w-4 h-4 mr-2 animate-spin' /> : <PlusIcon className='w-4 h-4 mr-2' />}
       <span>Add</span>
     </Button>

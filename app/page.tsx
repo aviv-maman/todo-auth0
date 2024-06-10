@@ -3,7 +3,6 @@ import { Heading } from '@/components/heading';
 import { AddTodoForm } from '@/components/todo-form';
 import redis, { databaseName } from '@/lib/redis';
 import type { TodoData } from '@/lib/database.types';
-import { HoverInfo } from '@/components/hover-info';
 
 export default async function Home() {
   // const data = (await redis.hgetall(databaseName)) as TodoData;
@@ -52,13 +51,11 @@ export default async function Home() {
 
   return (
     <>
-      <div className='flex flex-col items-center justify-between w-full md:flex-row'>
+      <div className='flex flex-col items-center justify-between md:flex-row md:mx-64'>
         <Heading
           title='Todo x Auth0 Application'
-          description='Simple Todo application with CRUD functionality made with Upstash Redis and Next.js'
-          source='https://github.com'
+          description='Simple to do application with CRUD functionality and Auth0 authentication that was made with Upstash Redis and Next.js'
         />
-        <HoverInfo />
       </div>
       <AddTodoForm />
       <Feed data={data} />

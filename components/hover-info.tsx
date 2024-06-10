@@ -1,7 +1,8 @@
 'use client';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
-import { InfoIcon } from 'lucide-react';
+import { CodeXmlIcon } from 'lucide-react';
 import { Button } from './ui/button';
+import Link from 'next/link';
 
 interface HoverInfoProps {
   user?: any;
@@ -12,10 +13,18 @@ export const HoverInfo: React.FC<HoverInfoProps> = ({ user }) => {
     <HoverCard openDelay={250}>
       <HoverCardTrigger>
         <Button variant='link'>
-          <InfoIcon className='w-5 h-5' />
+          <CodeXmlIcon className='w-5 h-5' />
         </Button>
       </HoverCardTrigger>
-      <HoverCardContent>The React Framework U+2013 created and maintained by @vercel.</HoverCardContent>
+      <HoverCardContent className='text-sm'>
+        Source code can be found on{' '}
+        <Link
+          href={'https://github.com/aviv-maman/todo-auth0'}
+          className='text-sm underline text-muted-foreground hover:cursor-pointer hover:text-indigo-400'>
+          GitHub
+        </Link>
+        .
+      </HoverCardContent>
     </HoverCard>
   );
 };
