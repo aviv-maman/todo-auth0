@@ -38,7 +38,7 @@ export const addTodoItem = async (prevState: typeof INITIAL_STATE, formData: For
 
 export const editTodoItem = async (prevState: typeof INITIAL_STATE & { id: string }, formData: FormData) => {
   try {
-    const res = await fetch(`${DOMAIN_URL}/api/todo/${prevState.id}`, { method: 'PATCH', body: formData });
+    const res = await fetch(`${DOMAIN_URL}/api/todo/${prevState.id}`, { method: 'PUT', body: formData });
     if (!res.ok) {
       const error: (typeof INITIAL_STATE)['error'] = { name: res.status, message: res.statusText };
       if (res.headers.get('content-type')?.includes('application/json')) {
@@ -76,6 +76,28 @@ export const deleteTodoItem = async (prevState: typeof INITIAL_STATE & { id: str
     revalidatePath('/', 'layout');
   } catch (error: any) {
     console.error('error in deleteTodoItem', error);
+    prevState = { ...prevState, result: null, error: { name: error?.name, message: error?.message } };
+  }
+  return prevState;
+};
+
+export const markAsComplete = async (prevState: typeof INITIAL_STATE & { id: string }, formData: FormData) => {
+  try {
+    const res = await fetch(`${DOMAIN_URL}/api/todo/${prevState.id}`, { method: 'PATCH', body: formData });
+    if (!res.ok) {
+      const error: (typeof INITIAL_STATE)['error'] = { name: res.status, message: res.statusText };
+      if (res.headers.get('content-type')?.includes('application/json')) {
+        const data = await res.json();
+        error.name = data.error.name;
+        error.message = data.error.message;
+      }
+      return { ...prevState, result: null, error };
+    }
+    const data = await res.json();
+    prevState = { ...prevState, result: data?.result, error: null };
+    revalidatePath('/', 'layout');
+  } catch (error: any) {
+    console.error('error in editTodoItem', error);
     prevState = { ...prevState, result: null, error: { name: error?.name, message: error?.message } };
   }
   return prevState;
