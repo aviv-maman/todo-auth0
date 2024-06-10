@@ -1,6 +1,7 @@
 import redis, { databaseName } from '@/lib/redis';
 import { type NextRequest, NextResponse } from 'next/server';
 import type { TodoData } from '@/lib/database.types';
+import { fakeDelay } from '@/app/actions/todo';
 
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -24,6 +25,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       );
     }
     const key = params.id;
+    await fakeDelay(2000);
     const currentValue = (await redis.hget(databaseName, key)) as TodoData;
     const newValue = JSON.stringify({ ...currentValue, ...updatedData });
     const result = await redis.hset(databaseName, { [key]: newValue });
@@ -50,6 +52,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         { status: 400 }
       );
     }
+    await fakeDelay(2000);
     const result = await redis.hdel(databaseName, params.id);
     return NextResponse.json({ result, error: null });
   } catch (error: any) {
