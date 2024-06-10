@@ -58,7 +58,9 @@ export const EditTodoForm: React.FC<EditTodoFormProps> = ({ id, value }) => {
     <>
       <Sheet open={closeEditDialog} onOpenChange={setCloseEditDialog}>
         <SheetTrigger asChild>
-          <Button size='sm' className='px-2.5 bg-blue-800 hover:bg-blue-700 hover:dark:bg-blue-900 text-white'>
+          <Button
+            size='sm'
+            className='px-2.5 bg-blue-700 dark:bg-blue-800 hover:bg-blue-600 hover:dark:bg-blue-900 text-white'>
             <PencilIcon className='w-4 h-4' />
           </Button>
         </SheetTrigger>
