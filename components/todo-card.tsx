@@ -1,7 +1,7 @@
 'use client';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
-import { CheckIcon, Loader2Icon, UserIcon } from 'lucide-react';
+import { CheckIcon, Loader2Icon, UserIcon, XIcon } from 'lucide-react';
 import type { TodoData } from '@/lib/database.types';
 import { cn } from '@/lib/utils';
 import { EditTodoForm } from './edit-todo-form';
@@ -81,7 +81,13 @@ const MarkAsCompleteButton: React.FC<MarkAsCompleteButtonProps> = ({ id, status:
       size='sm'
       className={`${colorClasses} px-2.5 text-white`}
       disabled={status.pending}>
-      {status.pending ? <Loader2Icon className='w-4 h-4 mr-2 animate-spin' /> : <CheckIcon className='w-4 h-4 mr-2' />}
+      {status.pending ? (
+        <Loader2Icon className='w-4 h-4 mr-2 animate-spin' />
+      ) : itemStatus ? (
+        <XIcon className='w-4 h-4 mr-2' />
+      ) : (
+        <CheckIcon className='w-4 h-4 mr-2' />
+      )}
       <span>{itemStatus ? `Mark as incomplete` : `Mark as complete`}</span>
     </Button>
   );

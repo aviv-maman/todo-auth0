@@ -19,16 +19,21 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ components }) => {
             <HomeIcon className='h-5 w-5' />
             <div className='font-bold'>ToDoz</div>
           </div>
-          <div className='flex flex-col space-y-3 pl-6'>
-            <span className='mt-3 text-left w-fit'>Menu</span>
+          <div className='flex flex-col space-y-2 pl-6'>
+            <span className='mt-2 text-left w-fit'>Menu</span>
             {components?.map((component) => (
               <Link
                 key={component.title}
                 href={component.href}
-                className='mt-3 text-left w-fit text-muted-foreground text-sm'>
+                className='mt-2 text-left w-fit text-muted-foreground text-sm'>
                 {component.title}
               </Link>
             ))}
+          </div>
+          <div className='flex flex-col mt-2 pl-6 border-t-2'>
+            <Link href='/about' className='mt-2 text-left w-fit text-muted-foreground text-sm'>
+              About
+            </Link>
           </div>
         </div>
       </SheetContent>

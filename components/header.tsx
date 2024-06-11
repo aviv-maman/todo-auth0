@@ -15,23 +15,30 @@ import { GithubIcon, HomeIcon, LinkedinIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ModeToggle } from '@/components/theme-toggle';
 import { HamburgerMenu } from './hamburger-menu';
+import { useUser } from '@auth0/nextjs-auth0/client';
 
-type HeaderProps = {
-  user?: { username: string; name: string } | null | undefined;
-};
-export const Header: React.FC<HeaderProps> = ({ user }) => {
-  const components: { title: string; href: string; description: string }[] = [
+export const Header: React.FC = () => {
+  const guestComponents: { title: string; href: string; description: string }[] = [
     {
-      title: 'Login',
-      href: '/login',
-      description: 'Login to an existing account.',
-    },
-    {
-      title: 'Register',
-      href: '/register',
-      description: 'Register a new account.',
+      title: 'Sign In',
+      href: '/api/auth/login',
+      description: 'Login to an existing account or register a new account.',
     },
   ];
+  const userComponents: { title: string; href: string; description: string }[] = [
+    {
+      title: 'Profile',
+      href: '/profile',
+      description: 'Your user profile.',
+    },
+    {
+      title: 'Logout',
+      href: '/api/auth/logout',
+      description: 'Logout the current session.',
+    },
+  ];
+
+  const { user, isLoading } = useUser();
 
   return (
     <header className='sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
@@ -58,11 +65,17 @@ export const Header: React.FC<HeaderProps> = ({ user }) => {
                         </div>
                       </NavigationMenuLink>
                     </li>
-                    {components.map((component) => (
-                      <ListItem key={component.title} title={component.title} href={component.href}>
-                        {component.description}
-                      </ListItem>
-                    ))}
+                    {user
+                      ? userComponents.map((component) => (
+                          <ListItem key={component.title} title={component.title} href={component.href}>
+                            {component.description}
+                          </ListItem>
+                        ))
+                      : guestComponents.map((component) => (
+                          <ListItem key={component.title} title={component.title} href={component.href}>
+                            {component.description}
+                          </ListItem>
+                        ))}
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -77,7 +90,7 @@ export const Header: React.FC<HeaderProps> = ({ user }) => {
 
         {/* MOBILE */}
         <div className='inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:text-accent-foreground h-9 py-2 mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden'>
-          <HamburgerMenu components={components} />
+          <HamburgerMenu components={user ? userComponents : guestComponents} />
           <span className='sr-only'>Toggle Menu</span>
         </div>
 
