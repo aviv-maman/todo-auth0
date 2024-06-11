@@ -1,6 +1,6 @@
 import { Feed } from '@/components/feed';
 import { Heading } from '@/components/heading';
-import { AddTodoForm } from '@/components/todo-form';
+import { AddTodoForm } from '@/components/add-todo-form';
 import redis, { databaseName } from '@/lib/redis';
 import type { TodoData } from '@/lib/database.types';
 
