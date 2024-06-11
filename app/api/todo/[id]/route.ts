@@ -51,7 +51,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     const dataObj = {
       title: formData.get('title'),
       content: formData.get('content'),
-      status: formData.get('status') ? true : false,
+      status: formData.get('status') === String(1) ? false : true,
       updated_at: Date.now(),
     };
     const updatedData = Object.fromEntries(Object.entries(dataObj).filter(([_, v]) => v !== null));

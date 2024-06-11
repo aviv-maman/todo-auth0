@@ -51,7 +51,7 @@ export const EditTodoForm: React.FC<EditTodoFormProps> = ({ id, value }) => {
     if (formState.error)
       toast({ title: 'Something Went Wrong', description: formState.error.message, variant: 'destructive' });
     if (formState.result || formState.result === 0)
-      toast({ title: 'Success', description: 'Item Was Successfully Updated', variant: 'default' });
+      toast({ title: 'Success', description: 'Item was successfully updated', variant: 'default' });
   }, [formState, toast]);
 
   return (

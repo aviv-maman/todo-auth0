@@ -31,7 +31,9 @@ const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) =
   useEffect(() => {
     if (formState.error)
       toast({ title: 'Something Went Wrong', description: formState.error.message, variant: 'destructive' });
-    if (formState.result) toast({ title: 'Success', description: 'Item was marked as complete', variant: 'default' });
+    const status = !value.status ? 'complete' : 'incomplete';
+    if (formState.result || formState.result === 0)
+      toast({ title: 'Success', description: `Item was marked as ${status}`, variant: 'default' });
   }, [formState, toast]);
 
   return (
@@ -49,7 +51,7 @@ const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) =
       <CardFooter className='block md:flex p-4 md:justify-between'>
         <div className='flex space-x-2'>
           <form action={formAction}>
-            <MarkAsCompleteButton />
+            <MarkAsCompleteButton id={id} status={value.status} />
           </form>
           <EditTodoForm id={id} value={value} />
           <DeleteTodo id={id} />
@@ -64,16 +66,23 @@ const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) =
 
 export default TodoCard;
 
-const MarkAsCompleteButton: React.FC = () => {
+type MarkAsCompleteButtonProps = { id: string; status: boolean };
+const MarkAsCompleteButton: React.FC<MarkAsCompleteButtonProps> = ({ id, status: itemStatus }) => {
   const status = useFormStatus();
+  const colorClasses = itemStatus
+    ? 'bg-orange-600 dark:bg-orange-700 hover:bg-orange-500 hover:dark:bg-orange-800'
+    : 'bg-green-600 dark:bg-green-700 hover:bg-green-500 hover:dark:bg-green-800';
   return (
     <Button
+      id={`mark-as-complete-btn-${id}`}
+      name='status'
+      value={itemStatus ? 1 : 0}
       type='submit'
       size='sm'
-      className='px-2.5 bg-green-600 dark:bg-green-700 hover:bg-green-500 hover:dark:bg-green-800 text-white'
+      className={`${colorClasses} px-2.5 text-white`}
       disabled={status.pending}>
       {status.pending ? <Loader2Icon className='w-4 h-4 mr-2 animate-spin' /> : <CheckIcon className='w-4 h-4 mr-2' />}
-      <span>Mark as complete</span>
+      <span>{itemStatus ? `Mark as incomplete` : `Mark as complete`}</span>
     </Button>
   );
 };

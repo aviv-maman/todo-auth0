@@ -34,7 +34,7 @@ export const AddTodoForm: React.FC = () => {
   useEffect(() => {
     if (formState.error)
       toast({ title: 'Something Went Wrong', description: formState.error.message, variant: 'destructive' });
-    if (formState.result) toast({ title: 'Success', description: 'Item Was Successfully Added', variant: 'default' });
+    if (formState.result) toast({ title: 'Success', description: 'Item Was successfully added', variant: 'default' });
   }, [formState, toast]);
 
   return (
