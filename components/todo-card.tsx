@@ -8,7 +8,7 @@ import { EditTodoForm } from './edit-todo-form';
 import DeleteTodo from './delete-todo';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { useFormState, useFormStatus } from 'react-dom';
-import { markAsComplete } from '@/app/actions/todo';
+import { markAsComplete } from '@/lib/actions/todo';
 import { useEffect } from 'react';
 import { useToast } from './ui/use-toast';
 

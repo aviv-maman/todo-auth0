@@ -12,7 +12,7 @@ import { Label } from './ui/label';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Switch } from './ui/switch';
 import { useToast } from './ui/use-toast';
-import { editTodoItem } from '@/app/actions/todo';
+import { editTodoItem } from '@/lib/actions/todo';
 
 const formSchema = z.object({
   title: z.string().min(2).max(50),

@@ -1,7 +1,7 @@
 import redis, { databaseName } from '@/lib/redis';
 import { type NextRequest, NextResponse } from 'next/server';
 import type { TodoData } from '@/lib/database.types';
-import { fakeDelay } from '@/app/actions/todo';
+import { fakeDelay } from '@/lib/actions/todo';
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {

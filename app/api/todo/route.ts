@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import redis, { databaseName } from '@/lib/redis';
 import { customAlphabet, urlAlphabet } from 'nanoid';
-import { fakeDelay } from '@/app/actions/todo';
+import { fakeDelay } from '@/lib/actions/todo';
 
 export async function POST(request: NextRequest) {
   try {

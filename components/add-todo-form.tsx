@@ -9,7 +9,7 @@ import * as z from 'zod';
 import { Loader2Icon, PlusIcon } from 'lucide-react';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
 import { useToast } from './ui/use-toast';
-import { addTodoItem } from '@/app/actions/todo';
+import { addTodoItem } from '@/lib/actions/todo';
 
 const formSchema = z.object({
   title: z.string().min(2).max(50),
