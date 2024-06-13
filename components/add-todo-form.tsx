@@ -10,6 +10,7 @@ import { Loader2Icon, PlusIcon } from 'lucide-react';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
 import { useToast } from './ui/use-toast';
 import { addTodoItem } from '@/lib/actions/todo';
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 const formSchema = z.object({
   title: z.string().min(2).max(50),
@@ -31,11 +32,14 @@ export const AddTodoForm: React.FC = () => {
   const initialState = { result: null, error: null };
   const [formState, formAction] = useFormState(addTodoItem, initialState);
 
+  const { error } = useUser();
+
   useEffect(() => {
     if (formState.error)
       toast({ title: 'Something Went Wrong', description: formState.error.message, variant: 'destructive' });
     if (formState.result) toast({ title: 'Success', description: 'Item Was successfully added', variant: 'default' });
-  }, [formState, toast]);
+    if (error) toast({ title: 'User Loading Was Failed', description: error.message, variant: 'destructive' });
+  }, [formState, toast, error]);
 
   return (
     <Form {...form}>
@@ -80,9 +84,14 @@ export const AddTodoForm: React.FC = () => {
 
 const AddButton: React.FC = () => {
   const status = useFormStatus();
+  const { isLoading } = useUser();
   return (
-    <Button type='submit' size='sm' className='px-2.5 w-fit' disabled={status.pending}>
-      {status.pending ? <Loader2Icon className='w-4 h-4 mr-2 animate-spin' /> : <PlusIcon className='w-4 h-4 mr-2' />}
+    <Button type='submit' size='sm' className='px-2.5 w-fit' disabled={status.pending || isLoading}>
+      {status.pending || isLoading ? (
+        <Loader2Icon className='w-4 h-4 mr-2 animate-spin' />
+      ) : (
+        <PlusIcon className='w-4 h-4 mr-2' />
+      )}
       <span>Add</span>
     </Button>
   );

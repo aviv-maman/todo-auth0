@@ -1,5 +1,6 @@
 'use server';
 import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
 
 const DOMAIN_URL = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
 const INITIAL_STATE: { result: number | string | null; error: { name: number | string; message: string } | null } = {
@@ -15,8 +16,14 @@ export const addTodoItem = async (prevState: typeof INITIAL_STATE, formData: For
   // if (todoData.title.length < 2 || todoData.title.length > 50) {
   //   return (prevState = { result: null, error: 'Title must be between 2 and 50 characters.' });
   // }
+  const cookieStore = cookies();
+  const sessionCookie = cookieStore.get('appSession');
   try {
-    const res = await fetch(`${DOMAIN_URL}/api/todo`, { method: 'POST', body: formData });
+    const res = await fetch(`${DOMAIN_URL}/api/todo`, {
+      method: 'POST',
+      body: formData,
+      headers: { Cookie: `${sessionCookie?.name}=${sessionCookie?.value}` },
+    });
     if (!res.ok) {
       const error: (typeof INITIAL_STATE)['error'] = { name: res.status, message: res.statusText };
       if (res.headers.get('content-type')?.includes('application/json')) {

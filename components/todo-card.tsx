@@ -20,6 +20,7 @@ type TodoCardProps = React.ComponentProps<typeof Card> & {
     title: string;
     content: string;
     status: boolean;
+    owner_picture: string | null;
   };
 };
 
@@ -41,7 +42,7 @@ const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) =
       <CardHeader className='flex-row justify-between p-2 pl-4'>
         <CardTitle className='content-center text-xl'>{value.title}</CardTitle>
         <Avatar style={{ marginBlockStart: 'auto' }}>
-          <AvatarImage src='https://github.com/shadcn.pngx' />
+          <AvatarImage src={String(value.owner_picture)} />
           <AvatarFallback>
             <UserIcon className='h-5 w-5' />
           </AvatarFallback>
