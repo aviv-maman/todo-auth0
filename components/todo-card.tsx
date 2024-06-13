@@ -35,7 +35,6 @@ const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) =
   const { error, isLoading, user } = useUser();
 
   useEffect(() => {
-    console.log(formState);
     if (formState.error)
       toast({ title: 'Something Went Wrong', description: formState.error.message, variant: 'destructive' });
     const status = !value.status ? 'complete' : 'incomplete';
