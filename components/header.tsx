@@ -103,7 +103,7 @@ export const Header: React.FC = () => {
             </Link>
             <Link href='https://www.linkedin.com/in/aviv-maman-914a95223' target='_blank' referrerPolicy='no-referrer'>
               <Button aria-label='LinkedIn' variant='outline' size='icon' className='h-9 w-9'>
-                <LinkedinIcon className='w-5 h-5' />
+                <LinkedinIcon className='w-5 h-5 text-blue-500' />
               </Button>
             </Link>
             <ModeToggle />
