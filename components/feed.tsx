@@ -11,8 +11,8 @@ export const Feed: React.FC<FeedProps> = ({ data = [] }) => {
   const completedTodos = Object.entries(data).filter(([key, value]) => value.status);
 
   return data ? (
-    <div id='feed-both' className='flex flex-col w-full overflow-hidden lg:flex-row md:justify-evenly md:space-x-4'>
-      <div id='feed-incomplete' className='w-full md:min-w-[350px] flex flex-col items-center mt-6'>
+    <div id='feed-both' className='flex flex-col w-full overflow-hidden lg:flex-row md:justify-evenly'>
+      <div id='feed-incomplete' className='w-full md:min-w-[350px] flex flex-col items-center mt-6 md:mr-3'>
         <h2 title='Incomplete' className='text-center border rounded text-2xl font-bold tracking-tight py-2 px-4'>
           Incomplete
         </h2>
@@ -28,7 +28,7 @@ export const Feed: React.FC<FeedProps> = ({ data = [] }) => {
           </Card>
         )}
       </div>
-      <div id='feed-complete' className='w-full md:min-w-[350px] flex flex-col items-center mt-6'>
+      <div id='feed-complete' className='w-full md:min-w-[350px] flex flex-col items-center mt-6 md:ml-3'>
         <h2 title='Complete' className='text-center border rounded text-2xl font-bold tracking-tight py-2 px-4'>
           Complete
         </h2>
