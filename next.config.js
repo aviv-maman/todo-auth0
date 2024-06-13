@@ -1,4 +1,11 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+const nextConfig = {
+  env: {
+    AUTH0_BASE_URL: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000',
+  },
+  images: {
+    remotePatterns: [{ protocol: 'https', hostname: '*.gravatar.com', pathname: '**' }],
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

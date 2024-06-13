@@ -1,5 +1,4 @@
 import { Suspense } from 'react';
-import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 import SpinnerWave from '@/components/spinner-wave';
 import ProfileCard from '@/components/profile-card';
 
@@ -13,4 +12,4 @@ async function Profile() {
   );
 }
 
-export default withPageAuthRequired(Profile, { returnTo: '/' });
+export default Profile;
