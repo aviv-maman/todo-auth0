@@ -11,21 +11,18 @@ export async function POST(request: NextRequest) {
     const todoData = {
       title: formData.get('title') as string | null,
       content: formData.get('content') as string | null,
-      owner_id: session?.user.sub.split('|')[1] || null,
-      owner_email: session?.user.email || null,
-      owner_name: session?.user.name || null,
-      owner_picture: session?.user.picture || null,
+      status: false,
     };
     if (!todoData.title || !todoData.content) {
       return NextResponse.json(
-        { result: null, error: { name: 'ValidationError', message: 'Not all the required fields were provided.' } },
-        { status: 400 }
+        { result: null, error: { name: 'Validation Error', message: 'Not all the required fields were provided.' } },
+        { status: 400, statusText: 'Bad Request' }
       );
     }
     if (todoData.title.length < 2 || todoData.title.length > 50) {
       return NextResponse.json(
-        { result: null, error: { name: 'ValidationError', message: 'Not all the required fields were provided.' } },
-        { status: 400 }
+        { result: null, error: { name: 'Validation Error', message: 'Not all the required fields were provided.' } },
+        { status: 400, statusText: 'Bad Request' }
       );
     }
     const newId = customAlphabet(urlAlphabet, 25)();
@@ -33,7 +30,10 @@ export async function POST(request: NextRequest) {
       id: newId,
       created_at: Date.now(),
       updated_at: Date.now(),
-      status: false,
+      owner_id: session?.user.sub.split('|')[1] || null,
+      owner_email: session?.user.email || null,
+      owner_name: session?.user.name || null,
+      owner_picture: session?.user.picture || null,
       ...todoData,
     };
     await fakeDelay(2000);
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
           message: `${error.message}. This is internal server error at route handler (POST)`,
         },
       },
-      { status: 500 }
+      { status: 500, statusText: 'Internal Server Error' }
     );
   }
 }

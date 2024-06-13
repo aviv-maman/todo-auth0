@@ -11,6 +11,7 @@ import { EditTodoForm } from './edit-todo-form';
 import DeleteTodo from './delete-todo';
 import { markAsComplete } from '@/lib/actions/todo';
 import { useToast } from './ui/use-toast';
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 type TodoCardProps = React.ComponentProps<typeof Card> & {
   id: string;
@@ -31,8 +32,10 @@ const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) =
   const initialState = { result: null, error: null, id };
   const [formState, formAction] = useFormState(markAsComplete, initialState);
   const { toast } = useToast();
+  const { error, isLoading, user } = useUser();
 
   useEffect(() => {
+    console.log(formState);
     if (formState.error)
       toast({ title: 'Something Went Wrong', description: formState.error.message, variant: 'destructive' });
     const status = !value.status ? 'complete' : 'incomplete';
@@ -54,11 +57,15 @@ const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) =
       <CardContent className='border-y space-x-4 p-4 text-sm text-muted-foreground'>{value.content}</CardContent>
       <CardFooter className='block md:flex p-4 md:justify-between'>
         <div className='flex space-x-2'>
-          <form action={formAction}>
-            <MarkAsCompleteButton id={id} status={value.status} />
-          </form>
-          <EditTodoForm id={id} value={value} />
-          <DeleteTodo id={id} />
+          {(user?.sub?.split('|')[1] === value.owner_id || !value.owner_id) && (
+            <>
+              <form action={formAction}>
+                <MarkAsCompleteButton id={id} status={value.status} />
+              </form>
+              <EditTodoForm id={id} value={value} />
+              <DeleteTodo id={id} />
+            </>
+          )}
         </div>
         <CardDescription className='text-xs h-[40px] flex items-end'>
           Updated at {new Date(value.updated_at).toLocaleString()}

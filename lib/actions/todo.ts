@@ -44,8 +44,14 @@ export const addTodoItem = async (prevState: typeof INITIAL_STATE, formData: For
 };
 
 export const editTodoItem = async (prevState: typeof INITIAL_STATE & { id: string }, formData: FormData) => {
+  const cookieStore = cookies();
+  const sessionCookie = cookieStore.get('appSession');
   try {
-    const res = await fetch(`${DOMAIN_URL}/api/todo/${prevState.id}`, { method: 'PUT', body: formData });
+    const res = await fetch(`${DOMAIN_URL}/api/todo/${prevState.id}`, {
+      method: 'PUT',
+      body: formData,
+      headers: { Cookie: `${sessionCookie?.name}=${sessionCookie?.value}` },
+    });
     if (!res.ok) {
       const error: (typeof INITIAL_STATE)['error'] = { name: res.status, message: res.statusText };
       if (res.headers.get('content-type')?.includes('application/json')) {
@@ -67,8 +73,13 @@ export const editTodoItem = async (prevState: typeof INITIAL_STATE & { id: strin
 
 //To use with <form action={formAction} encType='multipart/form-data'>
 export const deleteTodoItem = async (prevState: typeof INITIAL_STATE & { id: string }) => {
+  const cookieStore = cookies();
+  const sessionCookie = cookieStore.get('appSession');
   try {
-    const res = await fetch(`${DOMAIN_URL}/api/todo/${prevState.id}`, { method: 'DELETE' });
+    const res = await fetch(`${DOMAIN_URL}/api/todo/${prevState.id}`, {
+      method: 'DELETE',
+      headers: { Cookie: `${sessionCookie?.name}=${sessionCookie?.value}` },
+    });
     if (!res.ok) {
       const error: (typeof INITIAL_STATE)['error'] = { name: res.status, message: res.statusText };
       if (res.headers.get('content-type')?.includes('application/json')) {
@@ -89,8 +100,14 @@ export const deleteTodoItem = async (prevState: typeof INITIAL_STATE & { id: str
 };
 
 export const markAsComplete = async (prevState: typeof INITIAL_STATE & { id: string }, formData: FormData) => {
+  const cookieStore = cookies();
+  const sessionCookie = cookieStore.get('appSession');
   try {
-    const res = await fetch(`${DOMAIN_URL}/api/todo/${prevState.id}`, { method: 'PATCH', body: formData });
+    const res = await fetch(`${DOMAIN_URL}/api/todo/${prevState.id}`, {
+      method: 'PATCH',
+      body: formData,
+      headers: { Cookie: `${sessionCookie?.name}=${sessionCookie?.value}` },
+    });
     if (!res.ok) {
       const error: (typeof INITIAL_STATE)['error'] = { name: res.status, message: res.statusText };
       if (res.headers.get('content-type')?.includes('application/json')) {
