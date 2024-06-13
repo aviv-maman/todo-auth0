@@ -1,15 +1,15 @@
 'use client';
+import { useEffect } from 'react';
+import { useFormState, useFormStatus } from 'react-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { CheckIcon, Loader2Icon, UserIcon, XIcon } from 'lucide-react';
 import type { TodoData } from '@/lib/database.types';
 import { cn } from '@/lib/utils';
 import { EditTodoForm } from './edit-todo-form';
 import DeleteTodo from './delete-todo';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { useFormState, useFormStatus } from 'react-dom';
 import { markAsComplete } from '@/lib/actions/todo';
-import { useEffect } from 'react';
 import { useToast } from './ui/use-toast';
 
 type TodoCardProps = React.ComponentProps<typeof Card> & {
@@ -20,6 +20,9 @@ type TodoCardProps = React.ComponentProps<typeof Card> & {
     title: string;
     content: string;
     status: boolean;
+    owner_id: string | null;
+    owner_email: string | null;
+    owner_name: string | null;
     owner_picture: string | null;
   };
 };
