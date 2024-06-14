@@ -46,12 +46,15 @@ const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) =
     <Card className={cn('w-full', className)} {...props}>
       <CardHeader className='flex-row justify-between p-2 pl-4'>
         <CardTitle className='content-center text-xl'>{value.title}</CardTitle>
-        <Avatar style={{ marginBlockStart: 'auto' }}>
-          <AvatarImage src={value.owner_picture || undefined} />
-          <AvatarFallback>
-            <UserIcon className='h-5 w-5' />
-          </AvatarFallback>
-        </Avatar>
+        <div className='flex gap-x-2 items-center text-base' style={{ marginBlockStart: 'auto' }}>
+          <span>{value.owner_name || 'Guest'}</span>
+          <Avatar>
+            <AvatarImage src={value.owner_picture || undefined} />
+            <AvatarFallback>
+              <UserIcon className='h-5 w-5' />
+            </AvatarFallback>
+          </Avatar>
+        </div>
       </CardHeader>
       <CardContent className='border-y space-x-4 p-4 text-sm text-muted-foreground'>{value.content}</CardContent>
       <CardFooter className='block md:flex p-4 md:justify-between'>
