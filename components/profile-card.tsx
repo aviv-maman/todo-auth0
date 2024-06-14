@@ -14,7 +14,7 @@ const ProfileCard: React.FC<TodoCardProps> = async ({ className, ...props }) => 
     <Card className={cn('w-full md:flex', className)} {...props}>
       <Image
         className='object-cover object-center rounded-t-md md:rounded-tr-none md:rounded-l-md self-center md:self-start flex-shrink-0 w-full h-64 md:w-64'
-        src={session?.user.picture || '/avatar.png'}
+        src={session?.user.picture || '/images/avatar.png'}
         alt='avatar'
         width={224}
         height={224}
