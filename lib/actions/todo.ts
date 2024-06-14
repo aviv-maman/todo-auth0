@@ -121,7 +121,7 @@ export const markAsComplete = async (prevState: typeof INITIAL_STATE & { id: str
     prevState = { ...prevState, result: data?.result, error: null };
     revalidatePath('/', 'layout');
   } catch (error: any) {
-    console.error('error in editTodoItem', error);
+    console.error('error in markAsComplete', error);
     prevState = { ...prevState, result: null, error: { name: error?.name, message: error?.message } };
   }
   return prevState;
