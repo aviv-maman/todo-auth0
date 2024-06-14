@@ -1,12 +1,11 @@
+import redis, { databaseName } from '@/lib/redis';
 import type { TodoData } from '@/lib/database.types';
 import { Card, CardContent } from './ui/card';
 import TodoCard from './todo-card';
+import { fakeDelay } from '@/lib/actions/todo';
 
-interface FeedProps {
-  data?: TodoData;
-}
-
-export const Feed: React.FC<FeedProps> = ({ data = [] }) => {
+export const Feed: React.FC = async () => {
+  const data = (await fakeDelay(1500).then(async () => await redis.hgetall(databaseName))) as TodoData;
   const incompleteTodos = Object.entries(data).filter(([key, value]) => !value.status);
   const completedTodos = Object.entries(data).filter(([key, value]) => value.status);
 
