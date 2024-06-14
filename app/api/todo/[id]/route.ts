@@ -44,7 +44,12 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     // Check if the user is the owner of the todo item
     // And if the owner_id is not a guest.
     // If the owner is a guest (owner_id === null), then the user can edit the todo item.
-    if (currentValue?.owner_id && session?.user?.sub?.split('|')[1] !== currentValue?.owner_id) {
+    const [isAuthor, isUserAdmin, isUserAuthor] = [
+      currentValue?.owner_id ? true : false,
+      process.env.AUTH0_ADMIN_EMAIL === session?.user.email,
+      currentValue?.owner_id === session?.user?.sub?.split('|')[1],
+    ];
+    if (isAuthor && !isUserAuthor && !isUserAdmin) {
       return NextResponse.json(
         { result: null, error: { name: 'Authorization Error', message: 'Invalid authorization.' } },
         { status: 401, statusText: 'Unauthorized' }
@@ -103,7 +108,12 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     // Check if the user is the owner of the todo item
     // And if the owner_id is not a guest.
     // If the owner is a guest (owner_id === null), then the user can edit the todo item.
-    if (currentValue?.owner_id && session?.user?.sub?.split('|')[1] !== currentValue?.owner_id) {
+    const [isAuthor, isUserAdmin, isUserAuthor] = [
+      currentValue?.owner_id ? true : false,
+      process.env.AUTH0_ADMIN_EMAIL === session?.user.email,
+      currentValue?.owner_id === session?.user?.sub?.split('|')[1],
+    ];
+    if (isAuthor && !isUserAuthor && !isUserAdmin) {
       return NextResponse.json(
         { result: null, error: { name: 'Authorization Error', message: 'Invalid authorization.' } },
         { status: 401, statusText: 'Unauthorized' }
@@ -152,7 +162,12 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     // Check if the user is the owner of the todo item
     // And if the owner_id is not a guest.
     // If the owner is a guest (owner_id === null), then the user can delete the todo item.
-    if (currentValue?.owner_id && session?.user?.sub?.split('|')[1] !== currentValue?.owner_id) {
+    const [isAuthor, isUserAdmin, isUserAuthor] = [
+      currentValue?.owner_id ? true : false,
+      process.env.AUTH0_ADMIN_EMAIL === session?.user.email,
+      currentValue?.owner_id === session?.user?.sub?.split('|')[1],
+    ];
+    if (isAuthor && !isUserAuthor && !isUserAdmin) {
       return NextResponse.json(
         { result: null, error: { name: 'Authorization Error', message: 'Invalid authorization.' } },
         { status: 401, statusText: 'Unauthorized' }
