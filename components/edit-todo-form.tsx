@@ -43,8 +43,9 @@ export const EditTodoForm: React.FC<EditTodoFormProps> = ({ id, value }) => {
     },
   });
 
-  const initialState = { result: null, error: null, id };
-  const [formState, formAction] = useFormState(editTodoItem, initialState);
+  const initialState = { result: null, error: null };
+  const editTodoItemWithId = editTodoItem.bind(null, id);
+  const [formState, formAction] = useFormState(editTodoItemWithId, initialState);
 
   useEffect(() => {
     setCloseEditDialog(() => false);

@@ -29,8 +29,9 @@ type TodoCardProps = React.ComponentProps<typeof Card> & {
 };
 
 const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) => {
-  const initialState = { result: null, error: null, id };
-  const [formState, formAction] = useFormState(markAsComplete, initialState);
+  const initialState = { result: null, error: null };
+  const markAsCompleteWithId = markAsComplete.bind(null, id);
+  const [formState, formAction] = useFormState(markAsCompleteWithId, initialState);
   const { toast } = useToast();
   const { error, isLoading, user } = useUser();
 
@@ -91,7 +92,7 @@ const MarkAsCompleteButton: React.FC<MarkAsCompleteButtonProps> = ({ id, status:
     <Button
       id={`mark-as-complete-btn-${id}`}
       name='status'
-      value={itemStatus ? 1 : 0}
+      value={itemStatus ? 0 : 1}
       type='submit'
       size='sm'
       className={`${colorClasses} px-2.5 text-white`}

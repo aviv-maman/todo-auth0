@@ -1,22 +1,36 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useFormState, useFormStatus } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
 import { AlertTriangleIcon, Loader2Icon } from 'lucide-react';
+import { useToast } from './ui/use-toast';
+import { deleteTodoItem } from '@/lib/actions/todo';
 
 interface WarningModalProps {
+  id: string;
+  startTransition: React.TransitionStartFunction;
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
-  loading: boolean;
 }
 
-export const WarningModal: React.FC<WarningModalProps> = ({ isOpen, onClose, onConfirm, loading }) => {
+export const WarningModal: React.FC<WarningModalProps> = ({ id, startTransition, isOpen, onClose }) => {
+  const { toast } = useToast();
   const [isMounted, setIsMounted] = useState(false);
 
+  const initialState = { result: null, error: null };
+  const deleteTodoItemWithId = deleteTodoItem.bind(null, id);
+  const [formState, formAction] = useFormState(deleteTodoItemWithId, initialState);
+
   useEffect(() => {
-    setIsMounted(true);
+    setIsMounted(() => true);
   }, []);
+
+  useEffect(() => {
+    if (formState.error)
+      toast({ title: 'Something Went Wrong', description: formState.error.message, variant: 'destructive' });
+    if (formState.result) toast({ title: 'Success', description: 'Item was successfully deleted', variant: 'default' });
+  }, [formState, toast]);
 
   if (!isMounted) {
     return null;
@@ -28,19 +42,41 @@ export const WarningModal: React.FC<WarningModalProps> = ({ isOpen, onClose, onC
       description='All associated data related with this post will be DELETED forever.'
       isOpen={isOpen}
       onClose={onClose}>
-      <div className='flex items-center justify-end w-full space-x-2'>
-        <Button disabled={loading} variant='outline' onClick={onClose}>
-          Cancel
-        </Button>
-        <Button disabled={loading} variant='destructive' onClick={onConfirm} className='px-2.5 w-fit'>
-          {loading ? (
-            <Loader2Icon className='w-4 h-4 mr-2 animate-spin' />
-          ) : (
-            <AlertTriangleIcon className='w-4 h-4 mr-2' />
-          )}
-          <span>Delete</span>
-        </Button>
-      </div>
+      <form
+        action={() =>
+          startTransition(() => {
+            formAction();
+            onClose();
+          })
+        }>
+        <div className='flex items-center justify-end w-full space-x-2'>
+          <CancelButton onClose={onClose} />
+          <DeleteButton />
+        </div>
+      </form>
     </Modal>
+  );
+};
+
+const DeleteButton: React.FC = () => {
+  const status = useFormStatus();
+  return (
+    <Button type='submit' disabled={status.pending} variant='destructive' className='px-2.5 w-fit'>
+      {status.pending ? (
+        <Loader2Icon className='w-4 h-4 mr-2 animate-spin' />
+      ) : (
+        <AlertTriangleIcon className='w-4 h-4 mr-2' />
+      )}
+      <span>Delete</span>
+    </Button>
+  );
+};
+
+const CancelButton: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  const status = useFormStatus();
+  return (
+    <Button type='button' disabled={status.pending} variant='outline' onClick={onClose}>
+      Cancel
+    </Button>
   );
 };
