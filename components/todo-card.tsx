@@ -45,7 +45,7 @@ const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) =
 
   return (
     <Card className={cn('w-full', className)} {...props}>
-      <CardHeader className='block sm:flex flex-row justify-between p-4 border-b space-y-2 sm:space-y-0'>
+      <CardHeader className='block sm:flex flex-row justify-between p-4 space-y-2 sm:space-y-0'>
         <CardTitle className='content-center text-xl'>{value.title}</CardTitle>
         <div className='flex max-h-10 space-y-2 gap-x-2 items-center text-base flex-row-reverse sm:flex-row justify-end'>
           <span>{value.owner_name || 'Guest'}</span>
