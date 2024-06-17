@@ -5,13 +5,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { CheckIcon, Loader2Icon, UserIcon, XIcon } from 'lucide-react';
-import type { TodoData } from '@/lib/database.types';
 import { cn } from '@/lib/utils';
 import { EditTodoForm } from './edit-todo-form';
 import DeleteTodo from './delete-todo';
 import { markAsComplete } from '@/lib/actions/todo';
 import { useToast } from './ui/use-toast';
 import { useUser } from '@auth0/nextjs-auth0/client';
+import { todoFormInitialState } from '@/lib/schemas/todoFormSchema';
 
 type TodoCardProps = React.ComponentProps<typeof Card> & {
   id: string;
@@ -29,15 +29,14 @@ type TodoCardProps = React.ComponentProps<typeof Card> & {
 };
 
 const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) => {
-  const initialState = { result: null, error: null };
   const markAsCompleteWithId = markAsComplete.bind(null, id);
-  const [formState, formAction] = useFormState(markAsCompleteWithId, initialState);
+  const [formState, formAction] = useFormState(markAsCompleteWithId, todoFormInitialState);
   const { toast } = useToast();
   const { error, isLoading, user } = useUser();
 
   useEffect(() => {
-    if (formState.error)
-      toast({ title: 'Something Went Wrong', description: formState.error.message, variant: 'destructive' });
+    if (formState.errors)
+      formState.errors.map((error) => toast({ title: 'Something Went Wrong', description: error.message, variant: 'destructive' }));
     const status = !value.status ? 'complete' : 'incomplete';
     if (formState.result || formState.result === 0)
       toast({ title: 'Success', description: `Item was marked as ${status}`, variant: 'default' });
@@ -71,9 +70,7 @@ const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) =
               </>
             )}
           </div>
-          <CardDescription className='text-xs'>
-            Updated at {new Date(value.updated_at).toLocaleString()}
-          </CardDescription>
+          <CardDescription className='text-xs'>Updated at {new Date(value.updated_at).toLocaleString()}</CardDescription>
         </div>
       </CardFooter>
     </Card>

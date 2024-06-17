@@ -3,32 +3,28 @@ import { revalidatePath } from 'next/cache';
 import { customAlphabet, urlAlphabet } from 'nanoid';
 import { getSession } from '@auth0/nextjs-auth0';
 import redis, { databaseName } from '@/lib/redis';
+import { type TodoFormState, todoFormSchema } from '../schemas/todoFormSchema';
+// import type { ZodIssue } from 'zod';
 
-const INITIAL_STATE: { result: number | string | null; error: { name: number | string; message: string } | null } = {
-  result: null,
-  error: null,
-};
-
-export const addTodoItem = async (prevState: typeof INITIAL_STATE, formData: FormData) => {
-  prevState = { ...INITIAL_STATE };
+export const addTodoItem = async (prevState: TodoFormState, formData: FormData) => {
   try {
     const session = await getSession();
-    const todoData = {
-      title: formData.get('title') as string | null,
-      content: formData.get('content') as string | null,
-    };
-    if (!todoData.title || !todoData.content) {
-      return {
-        result: null,
-        error: { name: 'Validation Error', message: 'Not all the required fields were provided.' },
-      };
+    const data = Object.fromEntries(formData);
+    const parsed = await todoFormSchema.safeParseAsync(data);
+    if (!parsed.success) {
+      // const flattenIssues = parsed.error.flatten((issue: ZodIssue) => ({
+      //   name: `Validation Error in ${issue.path}`,
+      //   message: issue.message,
+      //   errorCode: issue.code,
+      // }));
+      const issues = parsed.error.issues.map((issue) => ({
+        name: `Validation Error in ${issue.path}`,
+        message: issue.message,
+        errorCode: issue.code,
+      }));
+      return { result: null, errors: issues };
     }
-    if (todoData.title.length < 2 || todoData.title.length > 50) {
-      return {
-        result: null,
-        error: { name: 'Validation Error', message: 'Title must be between 2 and 50 characters.' },
-      };
-    }
+
     const newId = customAlphabet(urlAlphabet, 25)();
     const newItem = {
       id: newId,
@@ -39,45 +35,48 @@ export const addTodoItem = async (prevState: typeof INITIAL_STATE, formData: For
       owner_name: session?.user.name || null,
       owner_picture: session?.user.picture || null,
       status: false,
-      ...todoData,
+      ...parsed.data,
     };
     await fakeDelay(2000);
     const result = await redis.hset(databaseName, { [newId]: JSON.stringify(newItem) });
-    prevState = { result, error: null };
+    prevState = { result, errors: null };
     revalidatePath('/', 'layout');
   } catch (error: any) {
     console.error('error in addTodoItem', error);
-    prevState = { result: null, error: { name: error?.name || 'Internal Server Error', message: error?.message } };
+    prevState = {
+      result: null,
+      errors: [{ name: error?.name || 'Internal Server Error', message: error?.message, errorCode: 500 }],
+    };
   }
   return prevState;
 };
 
-export const editTodoItem = async (id: string, prevState: typeof INITIAL_STATE, formData: FormData) => {
-  prevState = { ...INITIAL_STATE };
+export const editTodoItem = async (id: string, prevState: TodoFormState, formData: FormData) => {
   try {
     const session = await getSession();
     // if (!session) {
     //   return { result: null, error: { name: 'Authorization Error', message: 'User is not authenticated.' } };
     // }
-    if (!id) {
-      return { result: null, error: { name: 'Validation Error', message: 'ID is required.' } };
+    if (!id) return { result: null, errors: [{ name: 'Validation Error', message: 'ID is required.', errorCode: 400 }] };
+    const data = Object.fromEntries(formData);
+    const parsed = await todoFormSchema.safeParseAsync(data);
+    if (!parsed.success) {
+      const issues = parsed.error.issues.map((issue) => ({
+        name: `Validation Error in ${issue.path}`,
+        message: issue.message,
+        errorCode: issue.code,
+      }));
+      return { result: null, errors: issues };
     }
     const updatedData = {
-      title: formData.get('title'),
-      content: formData.get('content'),
+      ...parsed.data,
       status: formData.get('status') === String(1 || true) ? true : false,
       updated_at: Date.now(),
     };
-    if (!updatedData.title || !updatedData.content) {
-      return {
-        result: null,
-        error: { name: 'Validation Error', message: 'Not all the required fields were provided.' },
-      };
-    }
     await fakeDelay(2000);
     const currentValue: any = await redis.hget(databaseName, id);
     if (!currentValue) {
-      return { result: null, error: { name: 'Not Found Error', message: 'The requested resource was not found.' } };
+      return { result: null, errors: [{ name: 'Not Found Error', message: 'The requested resource was not found.', errorCode: 404 }] };
     }
     // Check if the user is the owner of the todo item
     // And if the owner_id is not a guest.
@@ -88,33 +87,30 @@ export const editTodoItem = async (id: string, prevState: typeof INITIAL_STATE, 
       currentValue?.owner_id === session?.user?.sub?.split('|')[1],
     ];
     if (isAuthor && !isUserAuthor && !isUserAdmin) {
-      return { result: null, error: { name: 'Authorization Error', message: 'Invalid authorization.' } };
+      return { result: null, errors: [{ name: 'Authorization Error', message: 'Invalid authorization.', errorCode: 401 }] };
     }
     const newValue = JSON.stringify({ ...currentValue, ...updatedData });
     const result = await redis.hset(databaseName, { [id]: newValue });
-    prevState = { result, error: null };
+    prevState = { result, errors: null };
     revalidatePath('/', 'layout');
   } catch (error: any) {
     console.error('error in editTodoItem', error);
-    prevState = { result: null, error: { name: error?.name || 'Internal Server Error', message: error?.message } };
+    prevState = { result: null, errors: [{ name: error?.name || 'Internal Server Error', message: error?.message, errorCode: 500 }] };
   }
   return prevState;
 };
 
-export const deleteTodoItem = async (id: string, prevState: typeof INITIAL_STATE) => {
-  prevState = { ...INITIAL_STATE };
+export const deleteTodoItem = async (id: string, prevState: TodoFormState) => {
   try {
     const session = await getSession();
     // if (!session) {
     //   return { result: null, error: { name: 'Authorization Error', message: 'User is not authenticated.' } };
     // }
-    if (!id) {
-      return { result: null, error: { name: 'Validation Error', message: 'ID is required.' } };
-    }
+    if (!id) return { result: null, errors: [{ name: 'Validation Error', message: 'ID is required.', errorCode: 400 }] };
     await fakeDelay(2000);
     const currentValue: any = await redis.hget(databaseName, id);
     if (!currentValue) {
-      return { result: null, error: { name: 'Not Found Error', message: 'The requested resource was not found.' } };
+      return { result: null, errors: [{ name: 'Not Found Error', message: 'The requested resource was not found.', errorCode: 404 }] };
     }
     // Check if the user is the owner of the todo item
     // And if the owner_id is not a guest.
@@ -125,27 +121,34 @@ export const deleteTodoItem = async (id: string, prevState: typeof INITIAL_STATE
       currentValue?.owner_id === session?.user?.sub?.split('|')[1],
     ];
     if (isAuthor && !isUserAuthor && !isUserAdmin) {
-      return { result: null, error: { name: 'Authorization Error', message: 'Invalid authorization.' } };
+      return { result: null, errors: [{ name: 'Authorization Error', message: 'Invalid authorization.', errorCode: 401 }] };
     }
     const result = await redis.hdel(databaseName, id);
-    prevState = { result, error: null };
+    prevState = { result, errors: null };
     revalidatePath('/', 'layout');
   } catch (error: any) {
     console.error('error in deleteTodoItem', error);
-    prevState = { result: null, error: { name: error?.name || 'Internal Server Error', message: error?.message } };
+    prevState = { result: null, errors: [{ name: error?.name || 'Internal Server Error', message: error?.message, errorCode: 500 }] };
   }
   return prevState;
 };
 
-export const markAsComplete = async (id: string, prevState: typeof INITIAL_STATE, formData: FormData) => {
-  prevState = { ...INITIAL_STATE };
+export const markAsComplete = async (id: string, prevState: TodoFormState, formData: FormData) => {
   try {
     const session = await getSession();
     // if (!session) {
     //   return { result: null, error: { name: 'Authorization Error', message: 'User is not authenticated.' } };
     // }
-    if (!id) {
-      return { result: null, error: { name: 'Validation Error', message: 'ID is required.' } };
+    if (!id) return { result: null, errors: [{ name: 'Validation Error', message: 'ID is required.', errorCode: 400 }] };
+    const data = Object.fromEntries(formData);
+    const parsed = await todoFormSchema.safeParseAsync(data);
+    if (!parsed.success) {
+      const issues = parsed.error.issues.map((issue) => ({
+        name: `Validation Error in ${issue.path}`,
+        message: issue.message,
+        errorCode: issue.code,
+      }));
+      return { result: null, errors: issues };
     }
     const updatedData = {
       status: formData.get('status') === String(1 || true) ? true : false,
@@ -154,7 +157,7 @@ export const markAsComplete = async (id: string, prevState: typeof INITIAL_STATE
     await fakeDelay(2000);
     const currentValue: any = await redis.hget(databaseName, id);
     if (!currentValue) {
-      return { result: null, error: { name: 'Not Found Error', message: 'The requested resource was not found.' } };
+      return { result: null, errors: [{ name: 'Not Found Error', message: 'The requested resource was not found.', errorCode: 404 }] };
     }
     // Check if the user is the owner of the todo item
     // And if the owner_id is not a guest.
@@ -165,15 +168,15 @@ export const markAsComplete = async (id: string, prevState: typeof INITIAL_STATE
       currentValue?.owner_id === session?.user?.sub?.split('|')[1],
     ];
     if (isAuthor && !isUserAuthor && !isUserAdmin) {
-      return { result: null, error: { name: 'Authorization Error', message: 'Invalid authorization.' } };
+      return { result: null, errors: [{ name: 'Authorization Error', message: 'Invalid authorization.', errorCode: 401 }] };
     }
     const newValue = JSON.stringify({ ...currentValue, ...updatedData });
     const result = await redis.hset(databaseName, { [id]: newValue });
-    prevState = { result, error: null };
+    prevState = { result, errors: null };
     revalidatePath('/', 'layout');
   } catch (error: any) {
     console.error('error in markAsComplete', error);
-    prevState = { result: null, error: { name: error?.name || 'Internal Server Error', message: error?.message } };
+    prevState = { result: null, errors: [{ name: error?.name || 'Internal Server Error', message: error?.message, errorCode: 500 }] };
   }
   return prevState;
 };

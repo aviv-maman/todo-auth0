@@ -5,38 +5,32 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import * as z from 'zod';
+import { type TodoFormSchema, todoFormSchema, todoFormInitialState } from '@/lib/schemas/todoFormSchema';
 import { Loader2Icon, PlusIcon } from 'lucide-react';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
 import { useToast } from './ui/use-toast';
 import { addTodoItem } from '@/lib/actions/todo';
 import { useUser } from '@auth0/nextjs-auth0/client';
 
-const formSchema = z.object({
-  title: z.string().min(2).max(50),
-  content: z.string().min(2).max(250),
-});
-
 export const AddTodoForm: React.FC = () => {
   const { toast } = useToast();
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<TodoFormSchema>({
+    resolver: zodResolver(todoFormSchema),
     defaultValues: {
       title: '',
       content: '',
     },
   });
 
-  // const formRef = useRef<HTMLFormElement | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
-  const initialState = { result: null, error: null };
-  const [formState, formAction] = useFormState(addTodoItem, initialState);
+  const [formState, formAction] = useFormState(addTodoItem, todoFormInitialState);
 
   const { error } = useUser();
 
   useEffect(() => {
-    if (formState.error)
-      toast({ title: 'Something Went Wrong', description: formState.error.message, variant: 'destructive' });
+    if (formState.errors)
+      formState.errors.map((error) => toast({ title: 'Something Went Wrong', description: error.message, variant: 'destructive' }));
     if (formState.result) toast({ title: 'Success', description: 'Item was successfully added', variant: 'default' });
     if (error) toast({ title: 'User Loading Was Failed', description: error.message, variant: 'destructive' });
   }, [formState, toast, error]);
@@ -44,9 +38,14 @@ export const AddTodoForm: React.FC = () => {
   return (
     <Form {...form}>
       <form
+        ref={formRef}
         action={formAction}
-        // ref={formRef}
-        // onSubmit={form.handleSubmit(() => formRef.current && formAction(new FormData(formRef.current)))}
+        onSubmit={(e) => {
+          e.preventDefault();
+          form.handleSubmit(() => {
+            formAction(new FormData(formRef.current!));
+          })(e);
+        }}
         className='flex flex-col grid-cols-12 gap-2 p-4 mt-5 border rounded-lg md:px-4 focus-within:shadow-sm md:mx-64'>
         <FormField
           control={form.control}
@@ -87,11 +86,7 @@ const AddButton: React.FC = () => {
   const { isLoading } = useUser();
   return (
     <Button type='submit' size='sm' className='px-2.5 w-fit' disabled={status.pending || isLoading}>
-      {status.pending || isLoading ? (
-        <Loader2Icon className='w-4 h-4 mr-2 animate-spin' />
-      ) : (
-        <PlusIcon className='w-4 h-4 mr-2' />
-      )}
+      {status.pending || isLoading ? <Loader2Icon className='w-4 h-4 mr-2 animate-spin' /> : <PlusIcon className='w-4 h-4 mr-2' />}
       <span>Add</span>
     </Button>
   );

@@ -6,6 +6,7 @@ import { Modal } from '@/components/ui/modal';
 import { AlertTriangleIcon, Loader2Icon } from 'lucide-react';
 import { useToast } from './ui/use-toast';
 import { deleteTodoItem } from '@/lib/actions/todo';
+import { todoFormInitialState } from '@/lib/schemas/todoFormSchema';
 
 interface WarningModalProps {
   id: string;
@@ -18,17 +19,16 @@ export const WarningModal: React.FC<WarningModalProps> = ({ id, startTransition,
   const { toast } = useToast();
   const [isMounted, setIsMounted] = useState(false);
 
-  const initialState = { result: null, error: null };
   const deleteTodoItemWithId = deleteTodoItem.bind(null, id);
-  const [formState, formAction] = useFormState(deleteTodoItemWithId, initialState);
+  const [formState, formAction] = useFormState(deleteTodoItemWithId, todoFormInitialState);
 
   useEffect(() => {
     setIsMounted(() => true);
   }, []);
 
   useEffect(() => {
-    if (formState.error)
-      toast({ title: 'Something Went Wrong', description: formState.error.message, variant: 'destructive' });
+    if (formState.errors)
+      formState.errors.map((error) => toast({ title: 'Something Went Wrong', description: error.message, variant: 'destructive' }));
     if (formState.result) toast({ title: 'Success', description: 'Item was successfully deleted', variant: 'default' });
   }, [formState, toast]);
 
@@ -62,11 +62,7 @@ const DeleteButton: React.FC = () => {
   const status = useFormStatus();
   return (
     <Button type='submit' disabled={status.pending} variant='destructive' className='px-2.5 w-fit'>
-      {status.pending ? (
-        <Loader2Icon className='w-4 h-4 mr-2 animate-spin' />
-      ) : (
-        <AlertTriangleIcon className='w-4 h-4 mr-2' />
-      )}
+      {status.pending ? <Loader2Icon className='w-4 h-4 mr-2 animate-spin' /> : <AlertTriangleIcon className='w-4 h-4 mr-2' />}
       <span>Delete</span>
     </Button>
   );

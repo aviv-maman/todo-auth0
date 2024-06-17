@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import * as z from 'zod';
+import { z } from 'zod';
 import { Loader2Icon, PencilIcon, PencilRulerIcon } from 'lucide-react';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
 import { Label } from './ui/label';
@@ -13,6 +13,7 @@ import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Switch } from './ui/switch';
 import { useToast } from './ui/use-toast';
 import { editTodoItem } from '@/lib/actions/todo';
+import { todoFormInitialState } from '@/lib/schemas/todoFormSchema';
 
 const formSchema = z.object({
   title: z.string().min(2).max(50),
@@ -43,14 +44,13 @@ export const EditTodoForm: React.FC<EditTodoFormProps> = ({ id, value }) => {
     },
   });
 
-  const initialState = { result: null, error: null };
   const editTodoItemWithId = editTodoItem.bind(null, id);
-  const [formState, formAction] = useFormState(editTodoItemWithId, initialState);
+  const [formState, formAction] = useFormState(editTodoItemWithId, todoFormInitialState);
 
   useEffect(() => {
     setCloseEditDialog(() => false);
-    if (formState.error)
-      toast({ title: 'Something Went Wrong', description: formState.error.message, variant: 'destructive' });
+    if (formState.errors)
+      formState.errors.map((error) => toast({ title: 'Something Went Wrong', description: error.message, variant: 'destructive' }));
     if (formState.result || formState.result === 0)
       toast({ title: 'Success', description: 'Item was successfully updated', variant: 'default' });
   }, [formState, toast]);
@@ -59,9 +59,7 @@ export const EditTodoForm: React.FC<EditTodoFormProps> = ({ id, value }) => {
     <>
       <Sheet open={closeEditDialog} onOpenChange={setCloseEditDialog}>
         <SheetTrigger asChild>
-          <Button
-            size='sm'
-            className='px-2.5 bg-blue-700 dark:bg-blue-800 hover:bg-blue-600 hover:dark:bg-blue-900 text-white'>
+          <Button size='sm' className='px-2.5 bg-blue-700 dark:bg-blue-800 hover:bg-blue-600 hover:dark:bg-blue-900 text-white'>
             <PencilIcon className='w-4 h-4' />
           </Button>
         </SheetTrigger>
@@ -107,11 +105,7 @@ export const EditTodoForm: React.FC<EditTodoFormProps> = ({ id, value }) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Switch
-                        name='status'
-                        checked={field.value}
-                        onCheckedChange={(checked) => form.setValue('status', checked)}
-                      />
+                      <Switch name='status' checked={field.value} onCheckedChange={(checked) => form.setValue('status', checked)} />
                     </FormControl>
                     <div className='space-y-1 leading-none'>
                       <FormLabel>{field.value ? 'Done' : 'Not Done'}</FormLabel>
@@ -134,11 +128,7 @@ const EditButton: React.FC = () => {
   const status = useFormStatus();
   return (
     <Button type='submit' size='sm' className='px-2.5 w-fit' disabled={status.pending}>
-      {status.pending ? (
-        <Loader2Icon className='w-4 h-4 mr-2 animate-spin' />
-      ) : (
-        <PencilRulerIcon className='w-4 h-4 mr-2' />
-      )}
+      {status.pending ? <Loader2Icon className='w-4 h-4 mr-2 animate-spin' /> : <PencilRulerIcon className='w-4 h-4 mr-2' />}
       <span>Update</span>
     </Button>
   );
