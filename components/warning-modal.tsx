@@ -27,7 +27,6 @@ export const WarningModal: React.FC<WarningModalProps> = ({ id, startTransition,
   }, []);
 
   useEffect(() => {
-    console.log(formState);
     if (formState.errors?.serverError) {
       toast({ title: 'Something Went Wrong', description: formState.errors.serverError.message, variant: 'destructive' });
     }
