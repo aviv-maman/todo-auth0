@@ -35,8 +35,6 @@ const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) =
   const { error, isLoading, user } = useUser();
 
   useEffect(() => {
-    console.log(formState);
-
     if (formState.errors?.serverError) {
       toast({ title: 'Something Went Wrong', description: formState.errors.serverError.message, variant: 'destructive' });
     }

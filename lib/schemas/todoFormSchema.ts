@@ -19,6 +19,7 @@ export const todoFormSchema = z.object({
     .max(250, {
       message: 'Content must be at most 250 characters.',
     }),
+  status: z.boolean().optional(),
 });
 
 export type TodoFormSchema = z.infer<typeof todoFormSchema>;

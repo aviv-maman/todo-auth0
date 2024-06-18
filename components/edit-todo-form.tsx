@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { Loader2Icon, PencilIcon, PencilRulerIcon } from 'lucide-react';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
 import { Label } from './ui/label';
@@ -13,13 +12,7 @@ import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Switch } from './ui/switch';
 import { useToast } from './ui/use-toast';
 import { editTodoItem } from '@/lib/actions/todo';
-import { todoFormInitialState } from '@/lib/schemas/todoFormSchema';
-
-const formSchema = z.object({
-  title: z.string().min(2).max(50),
-  content: z.string().min(2).max(250),
-  status: z.boolean(),
-});
+import { type TodoFormSchema, todoFormSchema, todoFormInitialState } from '@/lib/schemas/todoFormSchema';
 
 interface EditTodoFormProps {
   id: string;
@@ -35,8 +28,8 @@ interface EditTodoFormProps {
 export const EditTodoForm: React.FC<EditTodoFormProps> = ({ id, value }) => {
   const { toast } = useToast();
   const [closeEditDialog, setCloseEditDialog] = useState(false);
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<TodoFormSchema>({
+    resolver: zodResolver(todoFormSchema),
     defaultValues: {
       title: value.title,
       content: value.content,
@@ -67,8 +60,7 @@ export const EditTodoForm: React.FC<EditTodoFormProps> = ({ id, value }) => {
         <SheetContent>
           <Form {...form}>
             <form
-              action={formAction}
-              encType='multipart/form-data'
+              action={(formData) => form.trigger().then(() => formAction(formData))}
               className='flex flex-col w-full grid-cols-12 gap-2 px-2 py-4 mt-5 border rounded-lg md:px-4 focus-within:shadow-sm'>
               <Label htmlFor='todo' className='mt-3 text-left w-fit'>
                 Task
@@ -78,6 +70,7 @@ export const EditTodoForm: React.FC<EditTodoFormProps> = ({ id, value }) => {
                 name='title'
                 render={({ field }) => (
                   <FormItem>
+                    <FormLabel>Title</FormLabel>
                     <FormControl>
                       <Input placeholder='What needs to be done?' {...field} />
                     </FormControl>
@@ -90,6 +83,7 @@ export const EditTodoForm: React.FC<EditTodoFormProps> = ({ id, value }) => {
                 name='content'
                 render={({ field }) => (
                   <FormItem>
+                    <FormLabel>Content</FormLabel>
                     <FormControl>
                       <Input placeholder='What needs to be done?' {...field} />
                     </FormControl>
