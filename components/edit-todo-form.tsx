@@ -1,6 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -38,7 +37,7 @@ export const EditTodoForm: React.FC<EditTodoFormProps> = ({ id, value }) => {
   });
 
   const editTodoItemWithId = editTodoItem.bind(null, id);
-  const [formState, formAction] = useFormState(editTodoItemWithId, todoFormInitialState);
+  const [formState, formAction, isPending] = useActionState(editTodoItemWithId, todoFormInitialState);
 
   useEffect(() => {
     if (formState.errors?.serverError) {
@@ -111,21 +110,14 @@ export const EditTodoForm: React.FC<EditTodoFormProps> = ({ id, value }) => {
                   </FormItem>
                 )}
               />
-              <EditButton />
+              <Button type='submit' size='sm' className='px-2.5 w-fit' disabled={isPending}>
+                {isPending ? <Loader2Icon className='w-4 h-4 mr-2 animate-spin' /> : <PencilRulerIcon className='w-4 h-4 mr-2' />}
+                <span>Update</span>
+              </Button>
             </form>
           </Form>
         </SheetContent>
       </Sheet>
     </>
-  );
-};
-
-const EditButton: React.FC = () => {
-  const status = useFormStatus();
-  return (
-    <Button type='submit' size='sm' className='px-2.5 w-fit' disabled={status.pending}>
-      {status.pending ? <Loader2Icon className='w-4 h-4 mr-2 animate-spin' /> : <PencilRulerIcon className='w-4 h-4 mr-2' />}
-      <span>Update</span>
-    </Button>
   );
 };

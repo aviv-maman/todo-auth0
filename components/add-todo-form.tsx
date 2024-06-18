@@ -1,6 +1,5 @@
 'use client';
-import { useEffect, useRef } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,9 +23,9 @@ export const AddTodoForm: React.FC = () => {
 
   const formRef = useRef<HTMLFormElement>(null);
 
-  const [formState, formAction] = useFormState(addTodoItem, todoFormInitialState);
+  const [formState, formAction, isPending] = useActionState(addTodoItem, todoFormInitialState);
 
-  const { error } = useUser();
+  const { error, isLoading } = useUser();
 
   useEffect(() => {
     if (formState.errors?.serverError) {
@@ -72,19 +71,11 @@ export const AddTodoForm: React.FC = () => {
             </FormItem>
           )}
         />
-        <AddButton />
+        <Button type='submit' size='sm' className='px-2.5 w-fit' disabled={isPending || isLoading}>
+          {isPending || isLoading ? <Loader2Icon className='w-4 h-4 mr-2 animate-spin' /> : <PlusIcon className='w-4 h-4 mr-2' />}
+          <span>Add</span>
+        </Button>
       </form>
     </Form>
-  );
-};
-
-const AddButton: React.FC = () => {
-  const status = useFormStatus();
-  const { isLoading } = useUser();
-  return (
-    <Button type='submit' size='sm' className='px-2.5 w-fit' disabled={status.pending || isLoading}>
-      {status.pending || isLoading ? <Loader2Icon className='w-4 h-4 mr-2 animate-spin' /> : <PlusIcon className='w-4 h-4 mr-2' />}
-      <span>Add</span>
-    </Button>
   );
 };

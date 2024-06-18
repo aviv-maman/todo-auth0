@@ -1,6 +1,5 @@
 'use client';
-import { useEffect } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -30,9 +29,13 @@ type TodoCardProps = React.ComponentProps<typeof Card> & {
 
 const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) => {
   const markAsCompleteWithId = markAsComplete.bind(null, id);
-  const [formState, formAction] = useFormState(markAsCompleteWithId, markAsCompleteFormInitialState);
+  const [formState, formAction, isPending] = useActionState(markAsCompleteWithId, markAsCompleteFormInitialState);
   const { toast } = useToast();
   const { error, isLoading, user } = useUser();
+
+  const colorClasses = value.status
+    ? 'bg-orange-600 dark:bg-orange-700 hover:bg-orange-500 hover:dark:bg-orange-800'
+    : 'bg-green-600 dark:bg-green-700 hover:bg-green-500 hover:dark:bg-green-800';
 
   useEffect(() => {
     if (formState.errors?.serverError) {
@@ -64,7 +67,23 @@ const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) =
             {(user?.sub?.split('|')[1] === value.owner_id || !value.owner_id) && (
               <>
                 <form action={formAction}>
-                  <MarkAsCompleteButton id={id} status={value.status} />
+                  <Button
+                    id={`mark-as-complete-btn-${id}`}
+                    name='status'
+                    value={value.status ? 0 : 1}
+                    type='submit'
+                    size='sm'
+                    className={`${colorClasses} px-2.5 text-white`}
+                    disabled={isPending}>
+                    {isPending ? (
+                      <Loader2Icon className='w-4 h-4 mr-2 animate-spin' />
+                    ) : value.status ? (
+                      <XIcon className='w-4 h-4 mr-2' />
+                    ) : (
+                      <CheckIcon className='w-4 h-4 mr-2' />
+                    )}
+                    <span>{value.status ? `Mark as incomplete` : `Mark as complete`}</span>
+                  </Button>
                 </form>
                 <EditTodoForm id={id} value={value} />
                 <DeleteTodo id={id} />
@@ -79,30 +98,3 @@ const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) =
 };
 
 export default TodoCard;
-
-type MarkAsCompleteButtonProps = { id: string; status: boolean };
-const MarkAsCompleteButton: React.FC<MarkAsCompleteButtonProps> = ({ id, status: itemStatus }) => {
-  const status = useFormStatus();
-  const colorClasses = itemStatus
-    ? 'bg-orange-600 dark:bg-orange-700 hover:bg-orange-500 hover:dark:bg-orange-800'
-    : 'bg-green-600 dark:bg-green-700 hover:bg-green-500 hover:dark:bg-green-800';
-  return (
-    <Button
-      id={`mark-as-complete-btn-${id}`}
-      name='status'
-      value={itemStatus ? 0 : 1}
-      type='submit'
-      size='sm'
-      className={`${colorClasses} px-2.5 text-white`}
-      disabled={status.pending}>
-      {status.pending ? (
-        <Loader2Icon className='w-4 h-4 mr-2 animate-spin' />
-      ) : itemStatus ? (
-        <XIcon className='w-4 h-4 mr-2' />
-      ) : (
-        <CheckIcon className='w-4 h-4 mr-2' />
-      )}
-      <span>{itemStatus ? `Mark as incomplete` : `Mark as complete`}</span>
-    </Button>
-  );
-};

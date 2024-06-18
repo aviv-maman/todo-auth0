@@ -1,6 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
 import { AlertTriangleIcon, Loader2Icon } from 'lucide-react';
@@ -20,7 +19,7 @@ export const WarningModal: React.FC<WarningModalProps> = ({ id, startTransition,
   const [isMounted, setIsMounted] = useState(false);
 
   const deleteTodoItemWithId = deleteTodoItem.bind(null, id);
-  const [formState, formAction] = useFormState(deleteTodoItemWithId, deleteTodoFormInitialState);
+  const [formState, formAction, isPending] = useActionState(deleteTodoItemWithId, deleteTodoFormInitialState);
 
   useEffect(() => {
     setIsMounted(() => true);
@@ -51,29 +50,15 @@ export const WarningModal: React.FC<WarningModalProps> = ({ id, startTransition,
           })
         }>
         <div className='flex items-center justify-end w-full space-x-2'>
-          <CancelButton onClose={onClose} />
-          <DeleteButton />
+          <Button type='button' disabled={isPending} variant='outline' onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type='submit' disabled={isPending} variant='destructive' className='px-2.5 w-fit'>
+            {isPending ? <Loader2Icon className='w-4 h-4 mr-2 animate-spin' /> : <AlertTriangleIcon className='w-4 h-4 mr-2' />}
+            <span>Delete</span>
+          </Button>
         </div>
       </form>
     </Modal>
-  );
-};
-
-const DeleteButton: React.FC = () => {
-  const status = useFormStatus();
-  return (
-    <Button type='submit' disabled={status.pending} variant='destructive' className='px-2.5 w-fit'>
-      {status.pending ? <Loader2Icon className='w-4 h-4 mr-2 animate-spin' /> : <AlertTriangleIcon className='w-4 h-4 mr-2' />}
-      <span>Delete</span>
-    </Button>
-  );
-};
-
-const CancelButton: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const status = useFormStatus();
-  return (
-    <Button type='button' disabled={status.pending} variant='outline' onClick={onClose}>
-      Cancel
-    </Button>
   );
 };
