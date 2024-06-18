@@ -28,6 +28,12 @@ export const AddTodoForm: React.FC = () => {
 
   const { error } = useUser();
 
+  const handleSubmit = (e?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    form.handleSubmit(() => {
+      formRef.current?.requestSubmit();
+    })(e);
+  };
+
   useEffect(() => {
     if (formState.errors?.serverError) {
       toast({ title: 'Something Went Wrong', description: formState.errors.serverError.message, variant: 'destructive' });
@@ -36,13 +42,17 @@ export const AddTodoForm: React.FC = () => {
       toast({ title: 'Success', description: 'Item was successfully added', variant: 'default' });
     }
     if (error) toast({ title: 'User Loading Was Failed', description: error.message, variant: 'destructive' });
+
+    if (form.formState.isSubmitSuccessful) {
+      form.reset();
+    }
   }, [formState, toast, error]);
 
   return (
     <Form {...form}>
       <form
         ref={formRef}
-        action={(formData) => form.trigger().then(() => formAction(formData))}
+        action={formAction}
         className='flex flex-col grid-cols-12 gap-2 p-4 mt-5 border rounded-lg md:px-4 focus-within:shadow-sm md:mx-64'>
         <FormField
           control={form.control}
@@ -72,17 +82,17 @@ export const AddTodoForm: React.FC = () => {
             </FormItem>
           )}
         />
-        <AddButton />
+        <AddButton handleSubmit={handleSubmit} />
       </form>
     </Form>
   );
 };
 
-const AddButton: React.FC = () => {
+const AddButton: React.FC<{ handleSubmit: () => void }> = ({ handleSubmit }) => {
   const status = useFormStatus();
   const { isLoading } = useUser();
   return (
-    <Button type='submit' size='sm' className='px-2.5 w-fit' disabled={status.pending || isLoading}>
+    <Button type='button' size='sm' className='px-2.5 w-fit' disabled={status.pending || isLoading} onClick={handleSubmit}>
       {status.pending || isLoading ? <Loader2Icon className='w-4 h-4 mr-2 animate-spin' /> : <PlusIcon className='w-4 h-4 mr-2' />}
       <span>Add</span>
     </Button>
