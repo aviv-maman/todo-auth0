@@ -6,7 +6,7 @@ import { Modal } from '@/components/ui/modal';
 import { AlertTriangleIcon, Loader2Icon } from 'lucide-react';
 import { useToast } from './ui/use-toast';
 import { deleteTodoItem } from '@/lib/actions/todo';
-import { todoFormInitialState } from '@/lib/schemas/todoFormSchema';
+import { deleteTodoFormInitialState } from '@/lib/schemas/todoFormSchema';
 
 interface WarningModalProps {
   id: string;
@@ -20,13 +20,14 @@ export const WarningModal: React.FC<WarningModalProps> = ({ id, startTransition,
   const [isMounted, setIsMounted] = useState(false);
 
   const deleteTodoItemWithId = deleteTodoItem.bind(null, id);
-  const [formState, formAction] = useFormState(deleteTodoItemWithId, todoFormInitialState);
+  const [formState, formAction] = useFormState(deleteTodoItemWithId, deleteTodoFormInitialState);
 
   useEffect(() => {
     setIsMounted(() => true);
   }, []);
 
   useEffect(() => {
+    console.log(formState);
     if (formState.errors?.serverError) {
       toast({ title: 'Something Went Wrong', description: formState.errors.serverError.message, variant: 'destructive' });
     }

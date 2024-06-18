@@ -3,7 +3,8 @@ import { revalidatePath } from 'next/cache';
 import { customAlphabet, urlAlphabet } from 'nanoid';
 import { getSession } from '@auth0/nextjs-auth0';
 import redis, { databaseName } from '@/lib/redis';
-import { type TodoFormState, todoFormSchema, markAsCompleteFormSchema, MarkAsCompleteFormFormState } from '../schemas/todoFormSchema';
+import { todoFormSchema, markAsCompleteFormSchema } from '../schemas/todoFormSchema';
+import type { TodoFormState, MarkAsCompleteFormState, DeleteTodoFormState } from '../schemas/todoFormSchema';
 // import type { ZodIssue } from 'zod';
 
 export const addTodoItem = async (prevState: TodoFormState, formData: FormData) => {
@@ -105,7 +106,7 @@ export const editTodoItem = async (id: string, prevState: TodoFormState, formDat
   return prevState;
 };
 
-export const deleteTodoItem = async (id: string, prevState: TodoFormState) => {
+export const deleteTodoItem = async (id: string, prevState: DeleteTodoFormState) => {
   try {
     const session = await getSession();
     // if (!session) {
@@ -144,7 +145,7 @@ export const deleteTodoItem = async (id: string, prevState: TodoFormState) => {
   return prevState;
 };
 
-export const markAsComplete = async (id: string, prevState: MarkAsCompleteFormFormState, formData: FormData) => {
+export const markAsComplete = async (id: string, prevState: MarkAsCompleteFormState, formData: FormData) => {
   try {
     const session = await getSession();
     // if (!session) {

@@ -44,10 +44,8 @@ export const markAsCompleteFormSchema = z.object({
 });
 
 export type MarkAsCompleteFormSchema = z.infer<typeof markAsCompleteFormSchema>;
-
-export const markAsCompleteFormInitialState: MarkAsCompleteFormFormState = { result: null, errors: null };
-
-export type MarkAsCompleteFormFormState = {
+export const markAsCompleteFormInitialState: MarkAsCompleteFormState = { result: null, errors: null };
+export type MarkAsCompleteFormState = {
   result: number | string | null;
   errors: {
     formErrors?: MarkAsCompleteFlattenedErrors['formErrors'];
@@ -55,5 +53,11 @@ export type MarkAsCompleteFormFormState = {
     serverError?: { name: string; message: string; errorCode: string | number };
   } | null;
 };
-
 type MarkAsCompleteFlattenedErrors = z.inferFlattenedErrors<typeof markAsCompleteFormSchema>;
+
+//deleteTodo
+export type DeleteTodoFormState = {
+  result: number | string | null;
+  errors: { serverError?: { name: string; message: string; errorCode: string | number } } | null;
+};
+export const deleteTodoFormInitialState: DeleteTodoFormState = { result: null, errors: null };
