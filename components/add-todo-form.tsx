@@ -29,9 +29,12 @@ export const AddTodoForm: React.FC = () => {
   const { error } = useUser();
 
   useEffect(() => {
-    if (formState.errors)
-      formState.errors.map((error) => toast({ title: 'Something Went Wrong', description: error.message, variant: 'destructive' }));
-    if (formState.result) toast({ title: 'Success', description: 'Item was successfully added', variant: 'default' });
+    if (formState.errors?.serverError) {
+      toast({ title: 'Something Went Wrong', description: formState.errors.serverError.message, variant: 'destructive' });
+    }
+    if (formState.result) {
+      toast({ title: 'Success', description: 'Item was successfully added', variant: 'default' });
+    }
     if (error) toast({ title: 'User Loading Was Failed', description: error.message, variant: 'destructive' });
   }, [formState, toast, error]);
 
@@ -39,13 +42,7 @@ export const AddTodoForm: React.FC = () => {
     <Form {...form}>
       <form
         ref={formRef}
-        action={formAction}
-        onSubmit={(e) => {
-          e.preventDefault();
-          form.handleSubmit(() => {
-            formAction(new FormData(formRef.current!));
-          })(e);
-        }}
+        action={(formData) => form.trigger().then(() => formAction(formData))}
         className='flex flex-col grid-cols-12 gap-2 p-4 mt-5 border rounded-lg md:px-4 focus-within:shadow-sm md:mx-64'>
         <FormField
           control={form.control}

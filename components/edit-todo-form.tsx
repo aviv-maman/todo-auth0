@@ -49,8 +49,9 @@ export const EditTodoForm: React.FC<EditTodoFormProps> = ({ id, value }) => {
 
   useEffect(() => {
     setCloseEditDialog(() => false);
-    if (formState.errors)
-      formState.errors.map((error) => toast({ title: 'Something Went Wrong', description: error.message, variant: 'destructive' }));
+    if (formState.errors?.serverError) {
+      toast({ title: 'Something Went Wrong', description: formState.errors.serverError.message, variant: 'destructive' });
+    }
     if (formState.result || formState.result === 0)
       toast({ title: 'Success', description: 'Item was successfully updated', variant: 'default' });
   }, [formState, toast]);

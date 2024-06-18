@@ -11,7 +11,7 @@ import DeleteTodo from './delete-todo';
 import { markAsComplete } from '@/lib/actions/todo';
 import { useToast } from './ui/use-toast';
 import { useUser } from '@auth0/nextjs-auth0/client';
-import { todoFormInitialState } from '@/lib/schemas/todoFormSchema';
+import { markAsCompleteFormInitialState } from '@/lib/schemas/todoFormSchema';
 
 type TodoCardProps = React.ComponentProps<typeof Card> & {
   id: string;
@@ -30,13 +30,16 @@ type TodoCardProps = React.ComponentProps<typeof Card> & {
 
 const TodoCard: React.FC<TodoCardProps> = ({ id, value, className, ...props }) => {
   const markAsCompleteWithId = markAsComplete.bind(null, id);
-  const [formState, formAction] = useFormState(markAsCompleteWithId, todoFormInitialState);
+  const [formState, formAction] = useFormState(markAsCompleteWithId, markAsCompleteFormInitialState);
   const { toast } = useToast();
   const { error, isLoading, user } = useUser();
 
   useEffect(() => {
-    if (formState.errors)
-      formState.errors.map((error) => toast({ title: 'Something Went Wrong', description: error.message, variant: 'destructive' }));
+    console.log(formState);
+
+    if (formState.errors?.serverError) {
+      toast({ title: 'Something Went Wrong', description: formState.errors.serverError.message, variant: 'destructive' });
+    }
     const status = !value.status ? 'complete' : 'incomplete';
     if (formState.result || formState.result === 0)
       toast({ title: 'Success', description: `Item was marked as ${status}`, variant: 'default' });

@@ -27,8 +27,32 @@ export const todoFormInitialState: TodoFormState = { result: null, errors: null 
 
 export type TodoFormState = {
   result: number | string | null;
-  errors: { name: string; message: string; errorCode: string | number }[] | null;
-  // errors: FlattenedErrors | null;
+  // errors: { name: string; message: string; errorCode: string | number }[] | null;
+  errors: {
+    formErrors?: FlattenedErrors['formErrors'];
+    fieldErrors?: FlattenedErrors['fieldErrors'];
+    serverError?: { name: string; message: string; errorCode: string | number };
+  } | null;
 };
 
-// type FlattenedErrors = z.inferFlattenedErrors<typeof todoFormSchema>;
+type FlattenedErrors = z.inferFlattenedErrors<typeof todoFormSchema>;
+
+//markAsComplete
+export const markAsCompleteFormSchema = z.object({
+  status: z.boolean().optional(),
+});
+
+export type MarkAsCompleteFormSchema = z.infer<typeof markAsCompleteFormSchema>;
+
+export const markAsCompleteFormInitialState: MarkAsCompleteFormFormState = { result: null, errors: null };
+
+export type MarkAsCompleteFormFormState = {
+  result: number | string | null;
+  errors: {
+    formErrors?: MarkAsCompleteFlattenedErrors['formErrors'];
+    fieldErrors?: MarkAsCompleteFlattenedErrors['fieldErrors'];
+    serverError?: { name: string; message: string; errorCode: string | number };
+  } | null;
+};
+
+type MarkAsCompleteFlattenedErrors = z.inferFlattenedErrors<typeof markAsCompleteFormSchema>;
